@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F8FB"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvSaludo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="HOLA DE NUEVO CHOCO"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#20232A"
+            android:textAllCaps="true" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgPerfilMini"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_launcher_round"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Buscar cursos"
+        app:boxBackgroundColor="@android:color/white"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        android:layout_marginBottom="16dp">
+
+        <EditText
+            android:id="@+id/etBuscarComprar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgCategorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:chipSpacingHorizontal="8dp"> <!-- Espaciado para que no se amontonen -->
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                app:chipBackgroundColor="@color/color_chip"
+                android:layout_height="wrap_content"
+                android:text="Top" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                app:chipBackgroundColor="@color/color_chip"
+                android:layout_height="wrap_content"
+                android:text="Programación" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                app:chipBackgroundColor="@color/color_chip"
+                android:layout_height="wrap_content"
+                android:text="Idiomas" />
+
+            <com.google.android.material.chip.Chip
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipBackgroundColor="@color/color_chip"
+
+                android:text="Música" />
+
+            <!-- Agrega más para probar el scroll -->
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvResultadosBusqueda"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+    />
+
+</LinearLayout>

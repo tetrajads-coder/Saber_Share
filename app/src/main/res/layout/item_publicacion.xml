@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Imagen de Portada -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp">
+
+            <ImageView
+                android:id="@+id/imgPortada"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img"
+                tools:ignore="ContentDescription" />
+
+            <!-- (Opcional) Puedes poner un scrim (sombra) aquí si el texto no se lee bien -->
+        </FrameLayout>
+
+        <!-- Contenido -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Título con el Tipo (Curso/Clase) -->
+            <TextView
+                android:id="@+id/tvTituloPub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Curso: Título del Curso"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#20232A"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <!-- Autor y Calificación -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/tvAutorPub"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Por: Profesor X"
+                    android:textSize="14sp"
+                    android:textColor="#7A7A7A"/>
+
+                <TextView
+                    android:id="@+id/tvCalificacionPub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4.8 ★"
+                    android:textStyle="bold"
+                    android:textColor="#FFC107"/>
+            </LinearLayout>
+
+            <!-- Precio y Botón -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/tvPrecioPub"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="$ 299.00 MXN"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#20232A"/>
+
+                <Button
+                    android:id="@+id/btnAccionPub"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pagar"
+                    app:backgroundTint="#2E70FF"
+                    app:cornerRadius="20dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

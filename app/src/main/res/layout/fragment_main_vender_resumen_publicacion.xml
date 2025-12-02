@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/publicarRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F3F4F8">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header con color y título centrado -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:background="#2E70FF">
+
+            <TextView
+                android:id="@+id/tvTituloPantalla"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Resumen de publicación"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tvSubtitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Revisa que todo esté bien antes de confirmar tu venta"
+                android:textSize="13sp"
+                android:textColor="#E3ECFF"
+                android:gravity="center"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <!-- Contenido principal con padding -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Chip / etiqueta de tipo (Curso o Clase) -->
+            <TextView
+                android:id="@+id/tvTipo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo: Curso"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#2E70FF"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:background="@drawable/bg_chip"
+                android:backgroundTint="#E4ECFF"
+                android:layout_marginBottom="14dp"
+                android:layout_gravity="start" />
+
+            <!-- Card con datos del servicio -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardResumen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Titulo -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Título"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#20232A" />
+
+                    <TextView
+                        android:id="@+id/tvTituloValor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Curso de Java Avanzado"
+                        android:textSize="15sp"
+                        android:textColor="#4A4A4A"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#EEEEEE"
+                        android:layout_marginBottom="10dp"/>
+
+                    <!-- Descripcion -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Descripción"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#20232A" />
+
+                    <TextView
+                        android:id="@+id/tvDescripcionValor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aprenderás patrones de diseño..."
+                        android:textSize="14sp"
+                        android:textColor="#4A4A4A"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvExtraLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Archivo:"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#20232A" />
+
+                    <TextView
+                        android:id="@+id/tvExtraValor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="curso.mp4"
+                        android:textSize="14sp"
+                        android:textColor="#4A4A4A"
+                        android:layout_marginTop="2dp" />
+
+                    <!-- Divider -->
+                    <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEE"
+                    android:layout_marginBottom="10dp"/>
+
+                    <!-- Precio -->
+                    <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Precio"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:textColor="#20232A" />
+
+                    <TextView
+                    android:id="@+id/tvPrecioValor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$ 500.00"
+                    android:textSize="15sp"
+                    android:textColor="#16A34A"
+                    android:textStyle="bold"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="10dp" />
+
+                    <!-- Divider -->
+                    <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#EEEEEE"
+                    android:layout_marginBottom="10dp"/>
+
+                    <!-- Archivo o Requisitos (Dinámico) -->
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Botones -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmar"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:text="Confirmar publicación"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="#2E70FF"
+                android:textColor="@android:color/white"
+                app:cornerRadius="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRegresar"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:text="Volver a editar"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#2E70FF"
+                app:strokeWidth="1dp"
+                app:strokeColor="#2E70FF"
+                app:cornerRadius="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

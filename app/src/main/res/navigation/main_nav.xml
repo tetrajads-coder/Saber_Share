@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/inicio">
+
+    <fragment
+        android:id="@+id/inicio"
+        android:name="com.example.saber_share.fragmentos.contenido.Inicio"
+        android:label="fragment_main_inicio"
+        tools:layout="@layout/fragment_main_inicio" />
+    <fragment
+        android:id="@+id/mensajes"
+        android:name="com.example.saber_share.fragmentos.contenido.Mensajes"
+        android:label="fragment_main_mensajes"
+        tools:layout="@layout/fragment_main_mensajes" />
+    <fragment
+        android:id="@+id/perfil"
+        android:name="com.example.saber_share.fragmentos.contenido.Perfil"
+        android:label="fragment_main_perfil"
+        tools:layout="@layout/fragment_main_perfil" />
+    <fragment
+        android:id="@+id/vender"
+        android:name="com.example.saber_share.fragmentos.contenido.Vender"
+        android:label="fragment_main_vender"
+        tools:layout="@layout/fragment_main_vender" >
+        <action
+            android:id="@+id/action_vender_to_resumenPublicacion"
+            app:destination="@id/resumenPublicacion" />
+    </fragment>
+    <fragment
+        android:id="@+id/comprar"
+        android:name="com.example.saber_share.fragmentos.contenido.Comprar"
+        android:label="fragment_main_comprar"
+        tools:layout="@layout/fragment_main_comprar" />
+    <include app:graph="@navigation/cuenta_nav" />
+    <fragment
+        android:id="@+id/resumenPublicacion"
+        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.ResumenPublicacion"
+        android:label="ResumenPublicacion"
+        tools:layout="@layout/fragment_main_vender_resumen_publicacion">
+        <action
+            android:id="@+id/action_resumenPublicacion_to_inicio"
+            app:destination="@id/inicio" />
+    </fragment>
+    <fragment
+        android:id="@+id/detallePublicacion"
+        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.DetallePublicacion"
+        android:label="DetallePublicacion"
+        tools:layout="@layout/fragment_main_detalle_publicacion">
+        <action
+            android:id="@+id/action_detallePublicacion_to_editarPublicacion"
+            app:destination="@id/editarPublicacion" />
+    </fragment>
+    <fragment
+        android:id="@+id/editarPublicacion"
+        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.EditarPublicacion"
+        android:label="EditarPublicacion"
+        tools:layout="@layout/fragment_main_editar_publicacion">
+        <action
+            android:id="@+id/action_editarPublicacion_to_inicio"
+            app:destination="@id/inicio" />
+        <action
+            android:id="@+id/action_editarPublicacion_to_detallePublicacion"
+            app:destination="@id/detallePublicacion"
+            app:popUpTo="@id/detallePublicacion"
+            app:popUpToInclusive="true"
+            />
+    </fragment>
+
+
+</navigation>
