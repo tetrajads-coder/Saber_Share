@@ -5,6 +5,7 @@
     <color name="colorPrimary">#1E88E5</color>
     <color name="colorPrimaryDark">#1565C0</color>
     <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="purple_500">#7403FF</color>
 
     <color name="colorSecondary">#E3F2FD</color>
     <color name="colorOnSecondary">#1E88E5</color>

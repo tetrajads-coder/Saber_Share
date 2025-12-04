@@ -99,10 +99,7 @@ public class Comprar extends Fragment {
         bundle.putDouble("precio", p.getPrecio());
         bundle.putString("autor", p.getAutor());
         bundle.putString("calificacion", p.getCalificacion());
-
-        // IMPORTANTE: Pasar el campo extra
-        // (Asegúrate de haber agregado getExtra() a tu modelo Publicacion)
-        bundle.putString("extra", p.getImagenUrl()); // Usamos imagenUrl para guardar el archivo/requisito temporalmente
+        bundle.putString("extra", p.getExtraInfo());
 
         Navigation.findNavController(requireView()).navigate(R.id.detallePublicacion, bundle);
     }
@@ -116,7 +113,6 @@ public class Comprar extends Fragment {
             public void onResponse(Call<List<CursoDto>> call, Response<List<CursoDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     for (CursoDto c : response.body()) {
-                        // Asegúrate de pasar el ID del autor aquí (c.getUsuarioId())
                         listaGlobal.add(new Publicacion(
                                 Publicacion.TIPO_CURSO,
                                 c.getIdCurso(),
@@ -125,9 +121,9 @@ public class Comprar extends Fragment {
                                 c.getPrecio(),
                                 c.getNombreUsuario(),
                                 c.getCalificacion(),
-                                c.getFoto(),
-                                null,
-                                c.getUsuarioId() // <--- PASAR ID DEL AUTOR (Agregado al constructor de Publicacion)
+                                null,        // 8. ImagenUrl (Null, adapter usa dummy)
+                                c.getFoto(), // 9. ExtraInfo (Aquí guardamos el ARCHIVO/RUTA)
+                                c.getUsuarioId()
                         ));
                     }
                     adapter.setDatos(listaGlobal);
@@ -156,16 +152,15 @@ public class Comprar extends Fragment {
                                 s.getDescripcion(),
                                 s.getPrecio(),
                                 s.getNombreUsuario(),
-                                s.getRequisitos(),
-                                "N/A",
-                                null,
-                                s.getUsuarioId() // <--- PASAR ID DEL AUTOR
+                                "N/A",              // 7. Calificación (Corregido: Antes era requisitos)
+                                null,               // 8. ImagenUrl (Null porque el Adapter usa imágenes dummy)
+                                s.getRequisitos(),  // 9. ExtraInfo (Aquí van los REQUISITOS)
+                                s.getUsuarioId()    // 10. IdAutor
                         ));
                     }
                     adapter.setDatos(listaGlobal);
                 }
             }
-
             @Override
             public void onFailure(Call<List<ServicioDto>> call, Throwable t) {
                 if(listaGlobal.isEmpty()) {

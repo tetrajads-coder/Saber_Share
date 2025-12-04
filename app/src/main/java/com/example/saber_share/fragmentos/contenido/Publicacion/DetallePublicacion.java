@@ -29,7 +29,7 @@ import retrofit2.Response;
 public class DetallePublicacion extends Fragment {
 
     private int idAutor;
-    private int idOriginal; // El ID real de la base de datos
+    private int idOriginal;
     private String tipo, titulo, descripcion, autor, extra, calificacion;
     private double precio;
 
@@ -112,7 +112,6 @@ public class DetallePublicacion extends Fragment {
     }
 
     private void configurarPanelDueno(View view) {
-        // Botón Editar
         view.findViewById(R.id.btnEditarCurso).setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putInt("idOriginal", idOriginal);
@@ -124,7 +123,6 @@ public class DetallePublicacion extends Fragment {
             Navigation.findNavController(v).navigate(R.id.action_detallePublicacion_to_editarPublicacion, bundle);
         });
 
-        // Botón Eliminar (NUEVO)
         view.findViewById(R.id.btnEliminar).setOnClickListener(v -> mostrarDialogoConfirmacion());
 
         view.findViewById(R.id.btnVerAlumnos).setOnClickListener(v ->
@@ -142,7 +140,6 @@ public class DetallePublicacion extends Fragment {
 
     private void ejecutarEliminacion() {
         if (Publicacion.TIPO_CURSO.equals(tipo)) {
-            // Borrar Curso
             CursoApi api = RetrofitClient.getClient().create(CursoApi.class);
             api.deleteCurso(idOriginal).enqueue(new Callback<Void>() {
                 @Override

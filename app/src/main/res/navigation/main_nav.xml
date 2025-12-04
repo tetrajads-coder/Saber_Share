@@ -19,7 +19,11 @@
         android:id="@+id/perfil"
         android:name="com.example.saber_share.fragmentos.contenido.Perfil"
         android:label="fragment_main_perfil"
-        tools:layout="@layout/fragment_main_perfil" />
+        tools:layout="@layout/fragment_main_perfil" >
+        <action
+            android:id="@+id/action_perfil_to_administrarTarjetas"
+            app:destination="@id/administrarTarjetas" />
+    </fragment>
     <fragment
         android:id="@+id/vender"
         android:name="com.example.saber_share.fragmentos.contenido.Vender"
@@ -68,6 +72,22 @@
             app:popUpToInclusive="true"
             />
     </fragment>
+    <fragment
+        android:id="@+id/administrarTarjetas"
+        android:name="com.example.saber_share.fragmentos.contenido.AdministrarTarjetas"
+        android:label="AdministrarTarjetas"
+        tools:layout="@layout/fragment_main_administrar_tarjetas"
+        >
+        <action
+            android:id="@+id/action_administrarTarjetas_to_agregarTarjeta"
+            app:destination="@id/agregarTarjeta" />
+    </fragment>
+    <fragment
+        android:id="@+id/agregarTarjeta"
+        android:name="com.example.saber_share.fragmentos.contenido.AgregarTarjeta"
+        android:label="AgregarTarjeta"
+        tools:layout="@layout/fragment_main_agregar_tarjeta"
+        />
 
 
 </navigation>
