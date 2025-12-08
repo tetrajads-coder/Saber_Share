@@ -169,7 +169,8 @@ public class RegistroSesion extends Fragment implements View.OnClickListener {
                     // Guardamos sesión con el ID real que nos devolvió la base de datos
                     repository.guardarSesion(user, pass, nuevoId);
                     irAlMain();
-                } else {
+                }
+                else {
                     mostrarError("Error al registrar");
                 }
             }

@@ -19,11 +19,7 @@
         android:id="@+id/perfil"
         android:name="com.example.saber_share.fragmentos.contenido.Perfil"
         android:label="fragment_main_perfil"
-        tools:layout="@layout/fragment_main_perfil" >
-        <action
-            android:id="@+id/action_perfil_to_administrarTarjetas"
-            app:destination="@id/administrarTarjetas" />
-    </fragment>
+        tools:layout="@layout/fragment_main_perfil" />
     <fragment
         android:id="@+id/vender"
         android:name="com.example.saber_share.fragmentos.contenido.Vender"
@@ -73,21 +69,33 @@
             />
     </fragment>
     <fragment
-        android:id="@+id/administrarTarjetas"
-        android:name="com.example.saber_share.fragmentos.contenido.AdministrarTarjetas"
-        android:label="AdministrarTarjetas"
-        tools:layout="@layout/fragment_main_administrar_tarjetas"
-        >
+        android:id="@+id/perfil"
+        android:name="com.example.saber_share.fragmentos.contenido.Perfil"
+        android:label="fragment_main_perfil"
+        tools:layout="@layout/fragment_main_perfil" >
         <action
-            android:id="@+id/action_administrarTarjetas_to_agregarTarjeta"
-            app:destination="@id/agregarTarjeta" />
+            android:id="@+id/action_perfil_to_historialFragment"
+            app:destination="@id/historialFragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/agregarTarjeta"
-        android:name="com.example.saber_share.fragmentos.contenido.AgregarTarjeta"
-        android:label="AgregarTarjeta"
-        tools:layout="@layout/fragment_main_agregar_tarjeta"
-        />
+        android:id="@+id/historialFragment"
+        android:name="com.example.saber_share.fragmentos.contenido.HistorialFragment"
+        android:label="Historial"
+        tools:layout="@layout/fragment_historial" />
+    <fragment
+        android:id="@+id/inicio"
+        android:name="com.example.saber_share.fragmentos.contenido.Inicio"
+        android:label="fragment_main_inicio"
+        tools:layout="@layout/fragment_main_inicio">
+
+        <!-- ESTA ACCIÓN ES LA QUE USAS EN Inicio.java -->
+        <action
+            android:id="@+id/action_inicio_to_detallePublicacion"
+            app:destination="@id/detallePublicacion" />
+    </fragment>
+
+
 
 
 </navigation>

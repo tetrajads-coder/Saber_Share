@@ -9,12 +9,13 @@ import com.example.saber_share.Cuenta;
 import java.util.HashMap;
 
 public class SessionManager {
-    //https://www.youtube.com/watch?v=SLkQIlfRWgM pa que vean que si le muevo de que aca de aca ps de aca del yo mero
+
     private static final String PREF_NAME = "SaberShareSession";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_ID = "idUsuario";
     private static final String KEY_USUARIO = "usuario";
     private static final String KEY_PASSWORD = "password";
+    private static final String KEY_NOMBRE = "nombre";
 
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -26,12 +27,19 @@ public class SessionManager {
         editor = pref.edit();
     }
 
-    public void createLoginSession(String usuario, String password, int id) {
+    // 👉 Nueva versión con nombre
+    public void createLoginSession(String usuario, String password, int id, String nombre) {
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_USUARIO, usuario);
         editor.putString(KEY_PASSWORD, password);
         editor.putInt(KEY_ID, id);
+        editor.putString(KEY_NOMBRE, nombre);
         editor.commit();
+    }
+
+    // 👉 Opcional: versión vieja, por si en algún lado aún la usas
+    public void createLoginSession(String usuario, String password, int id) {
+        createLoginSession(usuario, password, id, "");
     }
 
     public boolean isLoggedIn() {
@@ -48,12 +56,16 @@ public class SessionManager {
     }
 
     public HashMap<String, String > getUserDetails() {
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         user.put(KEY_USUARIO, pref.getString(KEY_USUARIO, null));
         user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
+        user.put(KEY_NOMBRE, pref.getString(KEY_NOMBRE, null)); // 👈 devolvemos el nombre
         return user;
     }
 
+    public String getNombre() {
+        return pref.getString(KEY_NOMBRE, "");
+    }
 
     public void logoutUser() {
         editor.clear();
@@ -62,12 +74,9 @@ public class SessionManager {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
-
-
     }
 
     public int getUserId() {
         return pref.getInt(KEY_ID, -1);
     }
-
 }

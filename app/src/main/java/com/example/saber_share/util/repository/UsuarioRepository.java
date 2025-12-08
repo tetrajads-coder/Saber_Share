@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 public class UsuarioRepository {
+
     private final UsuarioApi api;
     private final SessionManager sessionManager;
 
@@ -34,6 +35,15 @@ public class UsuarioRepository {
     public void registrarUsuario(UsuarioDto nuevoUsuario, Callback<UsuarioDto> callback) {
         Call<UsuarioDto> call = api.registrar(nuevoUsuario);
         call.enqueue(callback);
+    }
+
+    public void guardarSesion(UsuarioDto usuarioDto) {
+        sessionManager.createLoginSession(
+                usuarioDto.getCorreo(),
+                usuarioDto.getPassword(),
+                usuarioDto.getId(),
+                usuarioDto.getNombre()
+        );
     }
 
     public void guardarSesion(String usuario, String password, int id) {

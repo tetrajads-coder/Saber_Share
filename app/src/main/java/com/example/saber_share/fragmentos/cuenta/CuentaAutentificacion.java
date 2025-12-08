@@ -53,7 +53,7 @@ public class CuentaAutentificacion extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         String opcion = ((Button)view).getText().toString();
 
-        if (opcion.equals("Iniciar sesión")){
+        if (opcion.equals("Iniciar sesion")){
             Navigation.findNavController(view).navigate(R.id.action_cuentaAutentificacion_to_inicioSesion);
         } else if (opcion.equals("Registrarse")){
             Navigation.findNavController(view).navigate(R.id.action_cuentaAutentificacion_to_registroSesion);

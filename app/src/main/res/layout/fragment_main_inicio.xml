@@ -25,11 +25,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="HOLA DE NUEVO CHOCO"
+                android:text=""
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#20232A"
-                android:textAllCaps="true" />
+                android:textAllCaps="false" />
+
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgPerfilMini"
@@ -70,19 +71,14 @@
                     android:layout_height="wrap_content"
                     android:text="Todos"
                     android:checked="true"
-                    app:chipBackgroundColor="@color/color_chip"
-                    />
+                    app:chipBackgroundColor="@color/color_chip" />
 
                 <com.google.android.material.chip.Chip
                     style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cursos"
-                    app:chipBackgroundColor="@color/color_chip"
-                    />
-
-                <!-- ... haz lo mismo con el tercer chip ... -->
-
+                    app:chipBackgroundColor="@color/color_chip" />
 
                 <com.google.android.material.chip.Chip
                     style="@style/Widget.Material3.Chip.Filter"
@@ -92,8 +88,6 @@
                     android:text="Clases 1 a 1" />
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
-
-
 
         <TextView
             android:layout_width="match_parent"
