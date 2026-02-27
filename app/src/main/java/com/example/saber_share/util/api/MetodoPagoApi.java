@@ -11,21 +11,22 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface MetodoPagoApi {
 
-    @GET("metodoPago")
-    Call<List<MetodoDePagoDto>> listarTarjetas();
+    @GET("api/metodoPago")
+    Call<List<MetodoDePagoDto>> listarTarjetas(@Query("idUsuario") int idUsuario);
 
-    @GET("metodoPago/{id}")
+    @GET("api/metodoPago/{id}")
     Call<MetodoDePagoDto> obtenerTarjeta(@Path("id") int id);
 
-    @POST("metodoPago")
+    @POST("api/metodoPago")
     Call<MetodoDePagoDto> crearTarjeta(@Body MetodoDePagoDto tarjeta);
 
-    @PUT("metodoPago/{id}")
+    @PUT("api/metodoPago/{id}")
     Call<MetodoDePagoDto> actualizarTarjeta(@Path("id") int id, @Body MetodoDePagoDto tarjeta);
 
-    @DELETE("metodoPago/{id}")
+    @DELETE("api/metodoPago/{id}")
     Call<Void> eliminarTarjeta(@Path("id") int id);
 }

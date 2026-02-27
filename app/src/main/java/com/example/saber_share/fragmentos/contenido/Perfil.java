@@ -138,10 +138,12 @@ public class Perfil extends Fragment implements View.OnClickListener {
                     .navigate(R.id.action_perfil_to_historialFragment);
 
         } else if (id == R.id.btnEstadisticas) {
-            Toast.makeText(getContext(), "Pantalla de estadisticas pendiente", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(v).navigate(R.id.action_perfil_to_estadisticasFragment);
+
 
         } else if (id == R.id.btnGestionarTarjetas) {
-            Toast.makeText(getContext(), "Pantalla de metodos de pago pendiente", Toast.LENGTH_SHORT).show();
+             Navigation.findNavController(v)
+                    .navigate(R.id.action_perfil_to_administrarTarjetas);
         }
     }
 }

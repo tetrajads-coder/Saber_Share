@@ -21,13 +21,29 @@ public class SessionManager {
     private SharedPreferences.Editor editor;
     private Context context;
 
+    private static final String KEY_LAST_CHAT_ID = "last_chat_id";
+    private static final String KEY_LAST_CHAT_NAME = "last_chat_name";
+
+    public void setLastChat(int receptorId, String receptorNombre) {
+        editor.putInt(KEY_LAST_CHAT_ID, receptorId);
+        editor.putString(KEY_LAST_CHAT_NAME, receptorNombre);
+        editor.apply();
+    }
+
+    public int getLastChatId() {
+        return pref.getInt(KEY_LAST_CHAT_ID, -1);
+    }
+
+    public String getLastChatName() {
+        return pref.getString(KEY_LAST_CHAT_NAME, "");
+    }
+
     public SessionManager(Context context) {
         this.context = context;
         pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = pref.edit();
     }
 
-    // 👉 Nueva versión con nombre
     public void createLoginSession(String usuario, String password, int id, String nombre) {
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_USUARIO, usuario);
@@ -37,7 +53,6 @@ public class SessionManager {
         editor.commit();
     }
 
-    // 👉 Opcional: versión vieja, por si en algún lado aún la usas
     public void createLoginSession(String usuario, String password, int id) {
         createLoginSession(usuario, password, id, "");
     }
@@ -59,7 +74,7 @@ public class SessionManager {
         HashMap<String, String> user = new HashMap<>();
         user.put(KEY_USUARIO, pref.getString(KEY_USUARIO, null));
         user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
-        user.put(KEY_NOMBRE, pref.getString(KEY_NOMBRE, null)); // 👈 devolvemos el nombre
+        user.put(KEY_NOMBRE, pref.getString(KEY_NOMBRE, null));
         return user;
     }
 

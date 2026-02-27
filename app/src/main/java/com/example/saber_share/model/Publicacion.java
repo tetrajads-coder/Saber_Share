@@ -4,12 +4,12 @@ public class Publicacion {
     public static final String TIPO_CURSO = "CURSO";
     public static final String TIPO_CLASE = "CLASE";
 
-    private String tipo; // "Entre curso y clave"
+    private String tipo;
     private int idOriginal;
     private String titulo;
     private String descripcion;
     private double precio;
-    private String autor; // Nombre del profe
+    private String autor;
     private String calificacion;
     private String imagenUrl;
     private int idAutor;

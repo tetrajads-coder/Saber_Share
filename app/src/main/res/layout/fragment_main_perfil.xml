@@ -4,31 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F8FB"
+    android:background="#F2F2F7"
     android:fillViewport="true"
-    android:padding="20dp">
+    android:padding="18dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Header iOS -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mi cuenta"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#20232A"
-            android:layout_marginBottom="16dp" />
+            android:textColor="#111827"
+            android:letterSpacing="0.02"
+            android:layout_marginBottom="14dp" />
 
+        <!-- Profile card (glass / iOS-ish) -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@android:color/white">
+            android:layout_marginBottom="14dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E5E7EB"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -39,8 +44,8 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imgPerfil"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:scaleType="centerCrop"
                     android:src="@mipmap/ic_launcher_round"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
@@ -50,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:paddingStart="16dp">
+                    android:paddingStart="14dp">
 
                     <TextView
                         android:id="@+id/tvNombrePerfil"
@@ -59,48 +64,52 @@
                         android:text="Cargando..."
                         android:textStyle="bold"
                         android:textSize="18sp"
-                        android:textColor="#20232A" />
+                        android:textColor="#111827" />
 
                     <TextView
                         android:id="@+id/tvCorreoPerfil"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="usuario@email.com"
-                        android:textColor="#7A7A7A"
-                        android:textSize="14sp" />
+                        android:textColor="#6B7280"
+                        android:textSize="14sp"
+                        android:layout_marginTop="2dp" />
                 </LinearLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Stats pills -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="16dp">
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#E0E0E0"
-                app:cardBackgroundColor="@android:color/white">
+                app:strokeColor="#E5E7EB"
+                app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Cursos"
-                        android:textColor="#7A7A7A"
-                        android:textSize="12sp" />
+                        android:textColor="#6B7280"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.04" />
 
                     <TextView
                         android:id="@+id/tvCountCursos"
@@ -108,8 +117,9 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:textColor="#20232A" />
+                        android:textSize="24sp"
+                        android:textColor="#111827"
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -118,24 +128,25 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#E0E0E0"
-                app:cardBackgroundColor="@android:color/white">
+                app:strokeColor="#E5E7EB"
+                app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Clases 1:1"
-                        android:textColor="#7A7A7A"
-                        android:textSize="12sp" />
+                        android:textColor="#6B7280"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.04" />
 
                     <TextView
                         android:id="@+id/tvCountClases"
@@ -143,47 +154,109 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:textColor="#20232A" />
+                        android:textSize="24sp"
+                        android:textColor="#111827"
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        <!-- Public info section label -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre público"
-            android:layout_marginBottom="12dp">
+            android:text="INFORMACION"
+            android:textColor="#9CA3AF"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:letterSpacing="0.08"
+            android:layout_marginBottom="10dp" />
 
-            <EditText
-                android:id="@+id/etNombrePublico"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        <!-- iOS list style block -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Correo"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E5E7EB"
+            app:cardBackgroundColor="#FFFFFF">
 
-            <EditText
-                android:id="@+id/etCorreoPublico"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="false" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nombre publico"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxStrokeColor="#E5E7EB"
+                    app:boxBackgroundColor="#FFFFFF"
+                    android:layout_marginBottom="12dp">
+
+                    <EditText
+                        android:id="@+id/etNombrePublico"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:textColor="#111827"
+                        android:textColorHint="#9CA3AF"
+                        android:padding="14dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Correo"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxStrokeColor="#E5E7EB"
+                    app:boxBackgroundColor="#FFFFFF">
+
+                    <EditText
+                        android:id="@+id/etCorreoPublico"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:textColor="#111827"
+                        android:textColorHint="#9CA3AF"
+                        android:padding="14dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Payment block -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PAGOS"
+            android:textColor="#9CA3AF"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:letterSpacing="0.08"
+            android:layout_marginBottom="10dp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@android:color/white">
+            android:layout_marginBottom="18dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E5E7EB"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -194,28 +267,34 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Método de pago"
+                    android:text="Metodo de pago"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textColor="#111827"
+                    android:layout_marginBottom="4dp" />
 
                 <TextView
                     android:id="@+id/tvMetodoPagoStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="(aun no agregado)"
-                    android:textColor="#7A7A7A"
-                    android:layout_marginBottom="12dp" />
+                    android:textColor="#6B7280"
+                    android:layout_marginBottom="14dp" />
 
                 <Button
                     android:id="@+id/btnGestionarTarjetas"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Administrar tarjetas" />
+                    android:layout_height="54dp"
+                    android:text="Administrar tarjetas"
+                    android:textAllCaps="false"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="#D1D5DB"
+                    android:textColor="#111827" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Primary actions -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -229,9 +308,12 @@
                 android:layout_height="56dp"
                 android:layout_weight="1"
                 android:text="Ver historial"
-                app:backgroundTint="#2E70FF"
-                app:cornerRadius="12dp"
-                android:layout_marginEnd="8dp" />
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                app:backgroundTint="#0C6FCB"
+                app:cornerRadius="18dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnEstadisticas"
@@ -239,20 +321,34 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:text="Ver estadísticas"
-                app:backgroundTint="#2E70FF"
-                app:cornerRadius="12dp"
-                android:layout_marginStart="8dp" />
+                android:text="Ver estadisticas"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                app:backgroundTint="#0C6FCB"
+                app:cornerRadius="18dp"
+                android:layout_marginStart="8dp"
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
+        <!-- Logout -->
         <Button
             android:id="@+id/btnCerrarSesion"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Cerrar sesión"
-            android:textColor="#D32F2F"
-            app:strokeColor="#D32F2F" />
+            android:text="Cerrar sesion"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:cornerRadius="18dp"
+            android:textColor="#DC2626"
+            app:strokeColor="#FCA5A5"
+            app:strokeWidth="1dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:layout_marginBottom="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -39,24 +39,30 @@ public class AdministrarTarjetas extends Fragment {
     public AdministrarTarjetas() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_administrar_tarjetas, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         sessionManager = new SessionManager(requireContext());
+
+        int miId = sessionManager.getUserId();
+        if (miId == -1) {
+            Toast.makeText(getContext(), "Sesión inválida. Inicia sesión otra vez.", Toast.LENGTH_SHORT).show();
+            sessionManager.logoutUser();
+            return;
+        }
 
         rvTarjetas = view.findViewById(R.id.rvTarjetas);
         tvVacio = view.findViewById(R.id.tvSinTarjetas);
 
-        // Configurar RecyclerView
         rvTarjetas.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new MetodoPagoAdapter(new ArrayList<>(), this::confirmarEliminacion);
         rvTarjetas.setAdapter(adapter);
 
-        // Botón Agregar
         view.findViewById(R.id.fabAgregarTarjeta).setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_administrarTarjetas_to_agregarTarjeta)
         );
@@ -64,30 +70,43 @@ public class AdministrarTarjetas extends Fragment {
         cargarTarjetas();
     }
 
-    private void cargarTarjetas() {
-        MetodoPagoApi api = RetrofitClient.getClient().create(MetodoPagoApi.class);
-        api.listarTarjetas().enqueue(new Callback<List<MetodoDePagoDto>>() {
-            @Override
-            public void onResponse(Call<List<MetodoDePagoDto>> call, Response<List<MetodoDePagoDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<MetodoDePagoDto> misTarjetas = new ArrayList<>();
-                    int miId = sessionManager.getUserId();
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (sessionManager != null && sessionManager.getUserId() != -1) {
+            cargarTarjetas();
+        }
+    }
 
+    private void cargarTarjetas() {
+        int miId = sessionManager.getUserId();
+        if (miId == -1) return;
+
+        MetodoPagoApi api = RetrofitClient.getClient().create(MetodoPagoApi.class);
+        
+        // CORRECCIÓN: Pasamos el miId al método listarTarjetas
+        api.listarTarjetas(miId).enqueue(new Callback<List<MetodoDePagoDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<MetodoDePagoDto>> call, @NonNull Response<List<MetodoDePagoDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // El backend ya debería filtrar por idUsuario, pero por seguridad filtramos aquí también si es necesario
+                    List<MetodoDePagoDto> misTarjetas = new ArrayList<>();
                     for (MetodoDePagoDto m : response.body()) {
                         if (m.getUsuarioId() != null && m.getUsuarioId() == miId) {
                             misTarjetas.add(m);
                         }
                     }
-
                     actualizarUI(misTarjetas);
                 } else {
-                    mostrarError("Error al cargar tarjetas");
+                    mostrarError("Error al cargar tarjetas (" + response.code() + ")");
+                    actualizarUI(new ArrayList<>());
                 }
             }
 
             @Override
-            public void onFailure(Call<List<MetodoDePagoDto>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<MetodoDePagoDto>> call, @NonNull Throwable t) {
                 mostrarError("Error de conexión");
+                actualizarUI(new ArrayList<>());
             }
         });
     }
@@ -116,16 +135,16 @@ public class AdministrarTarjetas extends Fragment {
         MetodoPagoApi api = RetrofitClient.getClient().create(MetodoPagoApi.class);
         api.eliminarTarjeta(id).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Tarjeta eliminada", Toast.LENGTH_SHORT).show();
-                    cargarTarjetas(); // Recargar lista
+                    cargarTarjetas();
                 } else {
                     mostrarError("No se pudo eliminar");
                 }
             }
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 mostrarError("Error de red");
             }
         });

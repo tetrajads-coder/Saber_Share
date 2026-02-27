@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class InicioSesion extends Fragment implements View.OnClickListener {
 
-    EditText etCorreo;
+    EditText etCorreo; // Este campo acepta Usuario o Correo
     EditText etPassword;
     Button btnIniciarSesion;
     Button btnRegistrarse;
@@ -60,21 +60,21 @@ public class InicioSesion extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        String opcion = ((Button) view).getText().toString();
+        int id = view.getId();
 
-        if (opcion.equals("Iniciar sesión")) {
+        if (id == R.id.btnIniciarSesion) {
             intentarLogin();
-        } else if (opcion.equals("Registrarse")) {
+        } else if (id == R.id.btnRegistrarse) {
             Navigation.findNavController(view).navigate(R.id.action_inicioSesion_to_registroSesion);
         }
     }
 
     private void intentarLogin() {
-        String usuarioInput = etCorreo.getText().toString().trim();
+        String input = etCorreo.getText().toString().trim();
         String passwordInput = etPassword.getText().toString().trim();
 
-        if (TextUtils.isEmpty(usuarioInput)) {
-            etCorreo.setError("Ingresa tu usuario");
+        if (TextUtils.isEmpty(input)) {
+            etCorreo.setError("Ingresa tu usuario o correo");
             return;
         }
         if (TextUtils.isEmpty(passwordInput)) {
@@ -85,32 +85,59 @@ public class InicioSesion extends Fragment implements View.OnClickListener {
         btnIniciarSesion.setEnabled(false);
         btnIniciarSesion.setText("Cargando...");
 
-        repository.verificarUsuario(usuarioInput, new Callback<List<UsuarioDto>>() {
+        // Intentamos buscar por NOMBRE DE USUARIO (usu_usu)
+        repository.verificarUsuario(input, new Callback<List<UsuarioDto>>() {
             @Override
             public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
-                btnIniciarSesion.setEnabled(true);
-                btnIniciarSesion.setText("Iniciar sesión");
-
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    UsuarioDto u = response.body().get(0);
-                    if (passwordInput.equals(u.getPassword())) {
-                        repository.guardarSesion(u);
-                        irAlMain();
-                    }else {
-                        Toast.makeText(getContext(), "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
-                    }
+                    validarPasswordYEntrar(response.body().get(0), passwordInput);
                 } else {
-                    Toast.makeText(getContext(), "Usuario no encontrado", Toast.LENGTH_SHORT).show();
+                    // Si no lo encuentra por usuario, intentamos por CORREO
+                    intentarLoginPorCorreo(input, passwordInput);
                 }
             }
 
             @Override
             public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
-                btnIniciarSesion.setEnabled(true);
-                btnIniciarSesion.setText("Iniciar sesión");
+                desbloquearBoton();
                 Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void intentarLoginPorCorreo(String correo, String pass) {
+        repository.verificarCorreo(correo, new Callback<List<UsuarioDto>>() {
+            @Override
+            public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
+                desbloquearBoton();
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    validarPasswordYEntrar(response.body().get(0), pass);
+                } else {
+                    Toast.makeText(getContext(), "Usuario o correo no encontrado", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
+                desbloquearBoton();
+                Toast.makeText(getContext(), "Error al validar correo", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void validarPasswordYEntrar(UsuarioDto u, String passIngresada) {
+        if (passIngresada.equals(u.getPassword())) {
+            repository.guardarSesion(u);
+            irAlMain();
+        } else {
+            desbloquearBoton();
+            Toast.makeText(getContext(), "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void desbloquearBoton() {
+        btnIniciarSesion.setEnabled(true);
+        btnIniciarSesion.setText("Iniciar sesión");
     }
 
     private void irAlMain() {

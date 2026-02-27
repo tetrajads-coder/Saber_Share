@@ -2,10 +2,7 @@ package com.example.saber_share.fragmentos.contenido;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,22 +20,19 @@ import com.example.saber_share.model.MensajeDto;
 import com.example.saber_share.util.api.MensajeApi;
 import com.example.saber_share.util.api.RetrofitClient;
 import com.example.saber_share.util.local.SessionManager;
+import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Mensajes extends Fragment {
-
-    private static final String ARG_RECEPTOR_ID = "receptorId";
-    private static final String ARG_RECEPTOR_NOMBRE = "receptorNombre";
+public class ChatFragment extends Fragment {
 
     private RecyclerView rvMensajes;
     private TextView tvVacio, tvTitulo;
-    private EditText etMensaje;
+    private TextInputEditText etMensaje;
     private ImageButton btnEnviar;
 
     private MensajeChatAdapter adapter;
@@ -48,20 +42,8 @@ public class Mensajes extends Fragment {
     private int receptorId = -1;
     private String receptorNombre = "";
 
-    public Mensajes() {}
-
-    public static Mensajes newInstance(int receptorId, String receptorNombre) {
-        Mensajes f = new Mensajes();
-        Bundle b = new Bundle();
-        b.putInt(ARG_RECEPTOR_ID, receptorId);
-        b.putString(ARG_RECEPTOR_NOMBRE, receptorNombre);
-        f.setArguments(b);
-        return f;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main_mensajes, container, false);
+    public ChatFragment() {
+        super(R.layout.fragment_main_mensajes);
     }
 
     @Override
@@ -72,21 +54,35 @@ public class Mensajes extends Fragment {
         emisorId = sessionManager.getUserId();
 
         rvMensajes = view.findViewById(R.id.rvMensajes);
-        tvVacio = view.findViewById(R.id.tvVacio); // <- CORRECTO
+        tvVacio = view.findViewById(R.id.tvVacio);
         tvTitulo = view.findViewById(R.id.tvTituloChat);
         etMensaje = view.findViewById(R.id.etMensaje);
         btnEnviar = view.findViewById(R.id.btnEnviar);
 
-        if (getArguments() != null) {
-            receptorId = getArguments().getInt(ARG_RECEPTOR_ID, -1);
-            receptorNombre = getArguments().getString(ARG_RECEPTOR_NOMBRE, "");
+        // 1) Intentar args
+        Bundle args = getArguments();
+        if (args != null) {
+            // Soporta ambos nombres por si en otro lado mandas "nombreReceptor"
+            receptorId = args.getInt("receptorId", -1);
+            receptorNombre = args.getString("receptorNombre", "");
+            if (TextUtils.isEmpty(receptorNombre)) {
+                receptorNombre = args.getString("nombreReceptor", "");
+            }
         }
 
-        if (!TextUtils.isEmpty(receptorNombre)) tvTitulo.setText(receptorNombre);
+        // 2) Si no hay args, usar ultimo chat guardado
+        if (receptorId <= 0) {
+            receptorId = sessionManager.getLastChatId();
+            receptorNombre = sessionManager.getLastChatName();
+        } else {
+            // Si si venia con args, guardalo como ultimo chat
+            sessionManager.setLastChat(receptorId, receptorNombre);
+        }
+
+        tvTitulo.setText(!TextUtils.isEmpty(receptorNombre) ? receptorNombre : "Chat");
 
         rvMensajes.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new MensajeChatAdapter(emisorId);
-        adapter.setDatos(new ArrayList<>());
         rvMensajes.setAdapter(adapter);
 
         if (emisorId <= 0) {
@@ -96,23 +92,35 @@ public class Mensajes extends Fragment {
         }
 
         if (receptorId <= 0) {
-            Toast.makeText(getContext(), "No se recibio receptorId. Abre el chat desde 'Hacer una pregunta'.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Abre un detalle y presiona Contactar para iniciar chat.", Toast.LENGTH_SHORT).show();
             btnEnviar.setEnabled(false);
+            tvVacio.setVisibility(View.VISIBLE);
+            rvMensajes.setVisibility(View.GONE);
             return;
         }
 
+        btnEnviar.setEnabled(true);
         btnEnviar.setOnClickListener(v -> enviarMensaje());
+
         cargarConversacion();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (emisorId > 0 && receptorId > 0) cargarConversacion();
     }
 
     private void cargarConversacion() {
         MensajeApi api = RetrofitClient.getClient().create(MensajeApi.class);
-
         api.conversacion(emisorId, receptorId).enqueue(new Callback<List<MensajeDto>>() {
             @Override
             public void onResponse(Call<List<MensajeDto>> call, Response<List<MensajeDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<MensajeDto> lista = response.body();
+
+                    // ✅ ORDENAR POR ID (viejo -> nuevo)
+                    java.util.Collections.sort(lista, (a, b) -> Integer.compare(a.getIdMensaje(), b.getIdMensaje()));
 
                     if (lista.isEmpty()) {
                         tvVacio.setVisibility(View.VISIBLE);
@@ -120,17 +128,21 @@ public class Mensajes extends Fragment {
                     } else {
                         tvVacio.setVisibility(View.GONE);
                         rvMensajes.setVisibility(View.VISIBLE);
-                        adapter.setDatos(lista);
-                        rvMensajes.scrollToPosition(adapter.getItemCount() - 1);
                     }
+
+                    adapter.setDatos(lista);
+
+                    // ✅ BAJAR AL ULTIMO
+                    if (!lista.isEmpty()) rvMensajes.scrollToPosition(adapter.getItemCount() - 1);
+
                 } else {
-                    Toast.makeText(getContext(), "No se pudieron cargar (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error cargar: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<MensajeDto>> call, Throwable t) {
-                Toast.makeText(getContext(), "Error de red al cargar mensajes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error de red al cargar", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -158,7 +170,7 @@ public class Mensajes extends Fragment {
                     adapter.addMensaje(response.body());
                     rvMensajes.scrollToPosition(adapter.getItemCount() - 1);
                 } else {
-                    Toast.makeText(getContext(), "No se pudo enviar (" + response.code() + ")", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No envio: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 

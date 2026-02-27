@@ -56,7 +56,7 @@
             android:orientation="vertical"
             android:padding="24dp"
             android:background="@drawable/bg_chip"
-            android:layout_marginTop="-20dp"> <!-- Efecto de tarjeta solapada -->
+            android:layout_marginTop="-20dp">
 
             <!-- Título y Autor -->
             <TextView
@@ -102,12 +102,13 @@
 
             <!-- Descripción -->
             <TextView
+                android:id="@+id/tvTituloDescripcion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Acerca de este curso"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="#20232A"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textColor="#20232A" />
 
             <TextView
                 android:id="@+id/tvDetalleDescripcion"
@@ -121,13 +122,13 @@
             <!-- Información Adicional (Dinámica) -->
             <TextView
                 android:id="@+id/tvLabelExtra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Requisitos / Archivo"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="#20232A"
-                android:layout_marginTop="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_marginTop="20dp" />
 
             <TextView
                 android:id="@+id/tvDetalleExtra"
@@ -145,8 +146,6 @@
                 android:background="#E0E0E0"
                 android:layout_marginVertical="20dp" />
 
-            <!-- ÁREA DE ACCIONES -->
-
             <!-- 1. Panel del DUEÑO -->
             <LinearLayout
                 android:id="@+id/panelDueno"
@@ -156,12 +155,12 @@
                 android:visibility="gone">
 
                 <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Panel de Administración"
                     android:textStyle="bold"
                     android:textColor="#2E70FF"
-                    android:layout_marginBottom="12dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_marginBottom="12dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEditarCurso"
@@ -172,6 +171,16 @@
                     app:backgroundTint="#FFA000"
                     app:cornerRadius="12dp"/>
 
+                <!-- ✅ BOTON NUEVO: Gestionar Horarios -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGestionarAgenda"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Gestionar Horarios"
+                    app:backgroundTint="#4CAF50"
+                    app:cornerRadius="12dp"
+                    android:layout_marginTop="8dp"/>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnVerAlumnos"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -180,7 +189,6 @@
                     android:text="Ver alumnos inscritos"
                     android:layout_marginTop="8dp"/>
 
-                <!-- BOTÓN ELIMINAR (¡AGREGADO!) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEliminar"
                     style="@style/Widget.Material3.Button.OutlinedButton"
@@ -228,13 +236,13 @@
                 android:visibility="gone">
 
                 <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="¡Ya tienes este curso!"
                     android:textStyle="bold"
                     android:textColor="#4CAF50"
                     android:gravity="center"
-                    android:layout_marginBottom="12dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_marginBottom="12dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnVerContenido"

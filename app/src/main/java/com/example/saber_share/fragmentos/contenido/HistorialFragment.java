@@ -47,7 +47,7 @@ public class HistorialFragment extends Fragment {
 
         rvHistorial = view.findViewById(R.id.rvHistorial);
         rvHistorial.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new HistorialAdapter(datos);
+        adapter = new HistorialAdapter(requireContext(), datos);
         rvHistorial.setAdapter(adapter);
 
         cargarHistorial();

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvNombre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#20232A" />
+
+    <TextView
+        android:id="@+id/tvUltimo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ultimo mensaje..."
+        android:textSize="14sp"
+        android:textColor="#6B7280"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvFecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2026-01-14 10:20"
+        android:textSize="12sp"
+        android:textColor="#9CA3AF"
+        android:layout_marginTop="6dp" />
+</LinearLayout>

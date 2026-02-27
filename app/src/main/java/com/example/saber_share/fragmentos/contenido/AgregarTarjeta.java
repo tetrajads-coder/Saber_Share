@@ -33,19 +33,20 @@ public class AgregarTarjeta extends Fragment {
     public AgregarTarjeta() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_agregar_tarjeta, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         sessionManager = new SessionManager(requireContext());
 
-        etNumero = view.findViewById(R.id.etNumeroTarjeta);
-        etFecha = view.findViewById(R.id.etFechaVencimiento); // Input tipo "MM/AA"
+        etNumero  = view.findViewById(R.id.etNumeroTarjeta);
+        etFecha   = view.findViewById(R.id.etFechaVencimiento); // MM/AA
         etTitular = view.findViewById(R.id.etTitular);
-        etCvv = view.findViewById(R.id.etCvv);
+        etCvv     = view.findViewById(R.id.etCvv);
         btnGuardar = view.findViewById(R.id.btnGuardarTarjeta);
 
         btnGuardar.setOnClickListener(v -> guardarTarjeta());
@@ -56,36 +57,65 @@ public class AgregarTarjeta extends Fragment {
     }
 
     private void guardarTarjeta() {
-        String numero = etNumero.getText().toString().trim();
+        // ✅ Validar sesion
+        int miId = sessionManager.getUserId();
+        if (miId == -1) {
+            Toast.makeText(getContext(), "Sesion invalida. Inicia sesion otra vez.", Toast.LENGTH_SHORT).show();
+            sessionManager.logoutUser();
+            return;
+        }
+
+        String numero = etNumero.getText().toString().trim().replace(" ", "");
         String fechaInput = etFecha.getText().toString().trim();
         String titular = etTitular.getText().toString().trim();
         String cvv = etCvv.getText().toString().trim();
 
-        if (TextUtils.isEmpty(numero) || numero.length() < 16) {
-            etNumero.setError("Número inválido (16 dígitos)"); return;
-        }
-        if (TextUtils.isEmpty(titular)) {
-            etTitular.setError("Requerido"); return;
+        if (TextUtils.isEmpty(numero) || numero.length() != 16 || !numero.matches("\\d+")) {
+            etNumero.setError("Numero invalido (16 digitos)");
+            return;
         }
 
-        // Conversión de fecha MM/AA -> YYYY-MM-01
-        String fechaParaBd = "";
+        if (TextUtils.isEmpty(titular)) {
+            etTitular.setError("Requerido");
+            return;
+        }
+
+        if (TextUtils.isEmpty(cvv) || !(cvv.length() == 3 || cvv.length() == 4) || !cvv.matches("\\d+")) {
+            etCvv.setError("CVV invalido (3 o 4 digitos)");
+            return;
+        }
+
+        // ✅ MM/AA -> YYYY-MM-01
+        String fechaParaBd;
         try {
-            if (!fechaInput.contains("/")) throw new Exception();
+            if (!fechaInput.contains("/")) throw new Exception("sin /");
+
             String[] partes = fechaInput.split("/");
-            String mes = partes[0];
-            String anio = "20" + partes[1]; // Asumimos siglo 21 (ej. 25 -> 2025)
-            // Validar mes básico
-            int mesInt = Integer.parseInt(mes);
-            if(mesInt < 1 || mesInt > 12) throw new Exception();
+            if (partes.length != 2) throw new Exception("partes");
+
+            String mesStr = partes[0].trim();
+            String anio2 = partes[1].trim();
+
+            int mesInt = Integer.parseInt(mesStr);
+            if (mesInt < 1 || mesInt > 12) throw new Exception("mes");
+
+            // forzar 2 digitos
+            String mes = (mesInt < 10) ? ("0" + mesInt) : String.valueOf(mesInt);
+
+            if (anio2.length() != 2) throw new Exception("anio");
+            String anio = "20" + anio2;
 
             fechaParaBd = anio + "-" + mes + "-01";
         } catch (Exception e) {
-            etFecha.setError("Formato inválido (Use MM/AA)"); return;
+            etFecha.setError("Formato invalido (MM/AA)");
+            return;
         }
 
-        // Lógica simple para detectar Visa/Mastercard
-        String compania = numero.startsWith("4") ? "VISA" : "MasterCard";
+        // ✅ detectar compania
+        String compania;
+        if (numero.startsWith("4")) compania = "VISA";
+        else if (numero.startsWith("5")) compania = "MASTERCARD";
+        else compania = "DESCONOCIDA";
 
         MetodoDePagoDto nuevaTarjeta = new MetodoDePagoDto();
         nuevaTarjeta.setCompania(compania);
@@ -93,34 +123,42 @@ public class AgregarTarjeta extends Fragment {
         nuevaTarjeta.setCvv(cvv);
         nuevaTarjeta.setVencimiento(fechaParaBd);
         nuevaTarjeta.setTitular(titular);
-        nuevaTarjeta.setUsuarioId(sessionManager.getUserId());
 
-        enviarAlBackend(nuevaTarjeta);
+        // ✅ CLAVE: FK depende de esto
+        nuevaTarjeta.setUsuarioId(miId);
+
+        // Debug rapido (quitale despues)
+        Toast.makeText(getContext(), "Guardando tarjeta para usuarioId=" + miId, Toast.LENGTH_SHORT).show();
+
+        enviarAlBackend(nuevaTarjeta, miId);
     }
 
-    private void enviarAlBackend(MetodoDePagoDto tarjeta) {
+    private void enviarAlBackend(MetodoDePagoDto tarjeta, int miId) {
         btnGuardar.setEnabled(false);
         btnGuardar.setText("Guardando...");
 
         MetodoPagoApi api = RetrofitClient.getClient().create(MetodoPagoApi.class);
         api.crearTarjeta(tarjeta).enqueue(new Callback<MetodoDePagoDto>() {
             @Override
-            public void onResponse(Call<MetodoDePagoDto> call, Response<MetodoDePagoDto> response) {
+            public void onResponse(@NonNull Call<MetodoDePagoDto> call, @NonNull Response<MetodoDePagoDto> response) {
+                btnGuardar.setEnabled(true);
+                btnGuardar.setText("Guardar");
+
                 if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Tarjeta agregada exitosamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Tarjeta agregada", Toast.LENGTH_SHORT).show();
                     Navigation.findNavController(requireView()).popBackStack();
                 } else {
-                    Toast.makeText(getContext(), "Error del servidor: " + response.code(), Toast.LENGTH_SHORT).show();
-                    btnGuardar.setEnabled(true);
-                    btnGuardar.setText("Guardar");
+                    Toast.makeText(getContext(),
+                            "Error " + response.code() + " (usuarioId=" + miId + ")",
+                            Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<MetodoDePagoDto> call, Throwable t) {
-                Toast.makeText(getContext(), "Fallo de conexión", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<MetodoDePagoDto> call, @NonNull Throwable t) {
                 btnGuardar.setEnabled(true);
                 btnGuardar.setText("Guardar");
+                Toast.makeText(getContext(), "Fallo de conexion: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

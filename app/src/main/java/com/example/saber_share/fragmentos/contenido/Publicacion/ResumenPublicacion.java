@@ -130,7 +130,7 @@ public class ResumenPublicacion extends Fragment {
             public void onResponse(Call<CursoDto> call, Response<CursoDto> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "¡Curso publicado exitosamente!", Toast.LENGTH_LONG).show();
-                    // Navegar al inicio y borrar el historial de pantallas de venta
+
                     Navigation.findNavController(requireView()).navigate(R.id.action_resumenPublicacion_to_inicio);
                 } else {
                     mostrarError("Error al publicar curso");
@@ -148,10 +148,9 @@ public class ResumenPublicacion extends Fragment {
         servicio.setTitulo(titulo);
         servicio.setDescripcion(descripcion);
         servicio.setPrecio(precio);
-        servicio.setRequisitos(extra); // Aquí guardamos los requisitos
+        servicio.setRequisitos(extra);
         servicio.setUsuarioId(userId);
 
-        // Fechas automáticas (porque la BD las exige NOT NULL)
         String fechaHoy = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String horaActual = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         servicio.setFecha(fechaHoy);

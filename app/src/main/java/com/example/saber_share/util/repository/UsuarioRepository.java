@@ -39,14 +39,14 @@ public class UsuarioRepository {
 
     public void guardarSesion(UsuarioDto usuarioDto) {
         sessionManager.createLoginSession(
-                usuarioDto.getCorreo(),
+                usuarioDto.getUser() != null ? usuarioDto.getUser() : usuarioDto.getCorreo(),
                 usuarioDto.getPassword(),
                 usuarioDto.getId(),
                 usuarioDto.getNombre()
         );
     }
 
-    public void guardarSesion(String usuario, String password, int id) {
-        sessionManager.createLoginSession(usuario, password, id);
+    public void guardarSesion(String usuario, String password, int id, String nombre) {
+        sessionManager.createLoginSession(usuario, password, id, nombre);
     }
 }
