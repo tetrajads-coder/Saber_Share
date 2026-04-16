@@ -1,34 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+    item_mensaje.xml
+    Usa visibility para mostrar burbuja enviada (mine) o recibida (theirs).
+    El adaptador oculta/muestra el LinearLayout correspondiente.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="6dp">
+    android:layout_marginVertical="3dp">
 
+    <!-- Mensaje RECIBIDO (izquierda) -->
     <LinearLayout
-        android:id="@+id/bubble"
-        android:layout_width="wrap_content"
+        android:id="@+id/layout_msg_recibido"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:background="@android:color/white"
-        android:elevation="1dp">
+        android:orientation="horizontal"
+        android:gravity="start|center_vertical"
+        android:paddingEnd="48dp"
+        android:visibility="gone">
 
-        <TextView
-            android:id="@+id/tvContenido"
+        <FrameLayout
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/bg_avatar"
+            android:layout_marginEnd="8dp"
+            android:layout_gravity="bottom">
+            <TextView
+                android:id="@+id/tv_msg_recibido_inicial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="U"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/accent_primary"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hola"
-            android:textSize="16sp"
-            android:textColor="#20232A"/>
+            android:orientation="vertical"
+            android:maxWidth="260dp">
 
-        <TextView
-            android:id="@+id/tvFecha"
+            <androidx.cardview.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/bg_card_elevated"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tv_msg_recibido_texto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mensaje recibido"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/text_primary"
+                    android:lineSpacingMultiplier="1.4"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="10dp"
+                    android:maxWidth="240dp" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tv_msg_recibido_hora"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12:00"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Mensaje ENVIADO (derecha) -->
+    <LinearLayout
+        android:id="@+id/layout_msg_enviado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end|center_vertical"
+        android:paddingStart="48dp"
+        android:visibility="gone">
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="18:10"
-            android:textSize="11sp"
-            android:textColor="#7A7A7A"
-            android:layout_marginTop="4dp"/>
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <androidx.cardview.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#1A3A1A"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#4D7C0F"
+                app:strokeWidth="1dp">
+
+                <TextView
+                    android:id="@+id/tv_msg_enviado_texto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mensaje enviado"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/text_primary"
+                    android:lineSpacingMultiplier="1.4"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="10dp"
+                    android:maxWidth="240dp" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tv_msg_enviado_hora"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12:00"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="4dp" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

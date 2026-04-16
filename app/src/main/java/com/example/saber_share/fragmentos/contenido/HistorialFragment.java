@@ -1,17 +1,15 @@
 package com.example.saber_share.fragmentos.contenido;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.saber_share.R;
 import com.example.saber_share.fragmentos.contenido.adapter.HistorialAdapter;
@@ -29,51 +27,63 @@ import retrofit2.Response;
 
 public class HistorialFragment extends Fragment {
 
-    private RecyclerView rvHistorial;
-    private HistorialAdapter adapter;
+    private RecyclerView       rvHistorial;
+    private SwipeRefreshLayout swipeHistorial;
+    private View               layoutEmpty;
+    private HistorialAdapter   adapter;
     private final List<HistorialDto> datos = new ArrayList<>();
 
-    public HistorialFragment() {}
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_historial, container, false);
-    }
+    public HistorialFragment() { super(R.layout.fragment_historial); }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvHistorial = view.findViewById(R.id.rvHistorial);
+        rvHistorial    = view.findViewById(R.id.rv_historial);
+        swipeHistorial = view.findViewById(R.id.swipe_historial);
+        layoutEmpty    = view.findViewById(R.id.layout_empty_historial);
+
+        // Toolbar back
+        view.<com.google.android.material.appbar.MaterialToolbar>findViewById(R.id.toolbar_historial)
+                .setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+
         rvHistorial.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new HistorialAdapter(requireContext(), datos);
         rvHistorial.setAdapter(adapter);
+
+        swipeHistorial.setColorSchemeResources(R.color.accent_primary);
+        swipeHistorial.setOnRefreshListener(this::cargarHistorial);
 
         cargarHistorial();
     }
 
     private void cargarHistorial() {
-        SessionManager sm = new SessionManager(requireContext());
-        int idUsuario = sm.getUserId();
+        swipeHistorial.setRefreshing(true);
+        int idUsuario = SessionManager.getInstance(requireContext()).getUsuarioId();
 
-        HistorialApi api = RetrofitClient.getClient().create(HistorialApi.class);
-        api.historialPorUsuario(idUsuario).enqueue(new Callback<List<HistorialDto>>() {
-            @Override
-            public void onResponse(Call<List<HistorialDto>> call, Response<List<HistorialDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    datos.clear();
-                    datos.addAll(response.body());
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(getContext(), "Error al cargar historial", Toast.LENGTH_SHORT).show();
-                }
-            }
+        RetrofitClient.getInstance().create(HistorialApi.class)
+                .historialPorUsuario(idUsuario).enqueue(new Callback<List<HistorialDto>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<HistorialDto>> call,
+                                           @NonNull Response<List<HistorialDto>> response) {
+                        swipeHistorial.setRefreshing(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            datos.clear();
+                            datos.addAll(response.body());
+                            adapter.notifyDataSetChanged();
+                            boolean vacio = datos.isEmpty();
+                            layoutEmpty.setVisibility(vacio ? View.VISIBLE : View.GONE);
+                            rvHistorial.setVisibility(vacio ? View.GONE : View.VISIBLE);
+                        } else {
+                            Toast.makeText(getContext(), "Error al cargar historial", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<List<HistorialDto>> call, Throwable t) {
-                Toast.makeText(getContext(), "Error de conexion", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<List<HistorialDto>> call, @NonNull Throwable t) {
+                        swipeHistorial.setRefreshing(false);
+                        Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

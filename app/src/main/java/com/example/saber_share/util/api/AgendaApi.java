@@ -6,6 +6,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -14,15 +15,18 @@ import retrofit2.http.Query;
 
 public interface AgendaApi {
 
-    @GET("Saber_Share/api/agenda/servicio/{idServicio}")
+    @GET("agenda/servicio/{idServicio}")
     Call<List<AgendaDto>> getSlotsPorServicio(@Path("idServicio") int idServicio);
 
-    @GET("Saber_Share/api/agenda/usuario/{idUsuario}")
+    @GET("agenda/usuario/{idUsuario}")
     Call<List<AgendaDto>> getMisAgendas(@Path("idUsuario") int idUsuario);
 
-    @POST("Saber_Share/api/agenda")
+    @POST("agenda")
     Call<AgendaDto> crearSlot(@Body AgendaDto slot);
 
-    @PUT("Saber_Share/api/agenda/reservar/{idAgenda}")
+    @PUT("agenda/reservar/{idAgenda}")
     Call<AgendaDto> reservarSlot(@Path("idAgenda") int idAgenda, @Query("idAlumno") int idAlumno);
+
+    @DELETE("agenda/{idAgenda}")
+    Call<Void> eliminarSlot(@Path("idAgenda") int idAgenda);
 }

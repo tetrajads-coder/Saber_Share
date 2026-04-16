@@ -1,143 +1,320 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:fillViewport="true">
+    android:background="@color/bg_primary">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_inicio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:background="@color/bg_primary"
+        app:elevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|enterAlways|snap">
 
-            <TextView
-                android:id="@+id/tvSaludo"
-                android:layout_width="0dp"
+            <!-- Hero Header con gradiente -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text=""
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#20232A"
-                android:textAllCaps="false" />
+                android:orientation="vertical"
+                android:background="@drawable/bg_hero_header"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp">
 
+                <!-- Fila saludo + avatar -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgPerfilMini"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@mipmap/ic_launcher_round"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="EXPLORAR"
+                            android:textSize="10sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/accent_blue"
+                            android:letterSpacing="0.15"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:id="@+id/tv_saludo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hola, Usuario"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textColor="@color/text_primary" />
+                    </LinearLayout>
+
+                    <!-- Avatar con gradiente -->
+                    <FrameLayout
+                        android:id="@+id/btn_perfil_avatar"
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/bg_avatar_gradient"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:id="@+id/tv_avatar_inicial"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="U"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textColor="@color/bg_primary"
+                            android:gravity="center" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Stats rápidas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_stat_card"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:layout_marginEnd="6dp">
+                        <TextView
+                            android:id="@+id/tv_stat_total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textColor="@color/accent_primary" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total"
+                            android:textSize="10sp"
+                            android:textColor="@color/text_tertiary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_stat_card"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:layout_marginEnd="6dp">
+                        <TextView
+                            android:id="@+id/tv_stat_cursos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textColor="@color/accent_primary" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cursos"
+                            android:textSize="10sp"
+                            android:textColor="@color/text_tertiary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_stat_card"
+                        android:padding="10dp"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_stat_clases"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            android:textColor="@color/accent_blue" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Clases"
+                            android:textSize="10sp"
+                            android:textColor="@color/text_tertiary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Buscador -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_buscar"
+                    style="@style/SS.TextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Buscar cursos, clases..."
+                    app:startIconDrawable="@drawable/ic_search"
+                    app:startIconTint="@color/text_tertiary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_buscar"
+                        style="@style/SS.TextInput.EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:imeOptions="actionSearch" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <!-- Chips de filtro -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:background="@color/bg_primary"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_todos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="🌐 Todos"
+                        android:textColor="@color/bg_primary"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/accent_blue"
+                        app:chipStrokeWidth="0dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_cursos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="📚 Cursos"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/border"
+                        app:chipStrokeWidth="1dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_servicios"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="🎓 Clases"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/border"
+                        app:chipStrokeWidth="1dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_populares"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="⭐ Populares"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        app:chipBackgroundColor="@color/bg_card"
+                        app:chipStrokeColor="@color/border"
+                        app:chipStrokeWidth="1dp" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
         </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/tvBuscarInicio"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/bg_input"
-            android:text="Buscar curso"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:textColor="#7A7A7A"
-            android:textSize="16sp"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginBottom="16dp"/>
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:layout_marginBottom="24dp">
-
-            <com.google.android.material.chip.ChipGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:singleLine="true">
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Todos"
-                    android:checked="true"
-                    app:chipBackgroundColor="@color/color_chip" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cursos"
-                    app:chipBackgroundColor="@color/color_chip" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:chipBackgroundColor="@color/color_chip"
-                    android:text="Clases 1 a 1" />
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Próximas clase 1 a 1"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#20232A"
-            android:layout_marginBottom="12dp" />
+    <!-- Lista -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_inicio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvProximasClases"
+            android:id="@+id/rv_publicaciones"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:layout_marginBottom="24dp"/>
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="80dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Estado vacío -->
+    <LinearLayout
+        android:id="@+id/layout_empty_inicio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Continuar Cursos"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#20232A"
-            android:layout_marginBottom="12dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvContinuarCursos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:layout_marginBottom="24dp"/>
+            android:text="📭"
+            android:textSize="52sp"
+            android:layout_marginBottom="14dp" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cursos Impartidos"
+            android:text="No hay publicaciones aún"
+            android:textSize="17sp"
             android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#20232A"
-            android:layout_marginBottom="12dp" />
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="6dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCursosImpartidos"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-
+            android:text="Sé el primero en publicar"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

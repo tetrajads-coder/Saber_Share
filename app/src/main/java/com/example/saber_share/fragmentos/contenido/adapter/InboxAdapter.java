@@ -36,16 +36,20 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.VH> {
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_inbox, parent, false);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_inbox, parent, false);
         return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         ConversacionDto c = data.get(position);
-        h.tvNombre.setText(c.otroNombre != null ? c.otroNombre : ("Usuario " + c.otroId));
+
+        String nombre = c.otroNombre != null ? c.otroNombre : ("Usuario " + c.otroId);
+        h.tvNombre.setText(nombre);
+        h.tvInicial.setText(nombre.isEmpty() ? "U" : String.valueOf(nombre.charAt(0)).toUpperCase());
         h.tvUltimo.setText(c.ultimoMensaje != null ? c.ultimoMensaje : "");
-        h.tvFecha.setText(c.fechaUltimo != null ? c.fechaUltimo : "");
+        h.tvHora.setText(c.fechaUltimo != null ? c.fechaUltimo : "");
 
         h.itemView.setOnClickListener(v -> {
             if (onClick != null) onClick.onClick(c);
@@ -53,18 +57,17 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.VH> {
     }
 
     @Override
-    public int getItemCount() {
-        return data.size();
-    }
+    public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvNombre, tvUltimo, tvFecha;
+        TextView tvNombre, tvInicial, tvUltimo, tvHora;
 
         VH(@NonNull View itemView) {
             super(itemView);
-            tvNombre = itemView.findViewById(R.id.tvNombre);
-            tvUltimo = itemView.findViewById(R.id.tvUltimo);
-            tvFecha = itemView.findViewById(R.id.tvFecha);
+            tvNombre  = itemView.findViewById(R.id.tv_inbox_nombre);
+            tvInicial = itemView.findViewById(R.id.tv_inbox_inicial);
+            tvUltimo  = itemView.findViewById(R.id.tv_inbox_ultimo_mensaje);
+            tvHora    = itemView.findViewById(R.id.tv_inbox_hora);
         }
     }
 }

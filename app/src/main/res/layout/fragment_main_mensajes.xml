@@ -1,77 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F8FB"
-    android:padding="16dp">
+    android:background="@color/bg_primary">
 
-    <TextView
-        android:id="@+id/tvTituloChat"
-        android:layout_width="0dp"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mensajes"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#20232A"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:background="@color/bg_primary"
+        app:elevation="0dp">
 
-    <TextView
-        android:id="@+id/tvVacio"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Aun no hay mensajes"
-        android:gravity="center"
-        android:textColor="#7A7A7A"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tvTituloChat"
-        app:layout_constraintBottom_toTopOf="@id/barraEnvio"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMensajes"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/tvTituloChat"
-        app:layout_constraintBottom_toTopOf="@id/barraEnvio"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Barra envio -->
-    <LinearLayout
-        android:id="@+id/barraEnvio"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etMensaje"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Escribe un mensaje..."
-            android:inputType="textMultiLine"
-            android:maxLines="3"
-            android:background="@android:color/transparent"
-            android:padding="8dp"/>
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="12dp">
 
-        <ImageButton
-            android:id="@+id/btnEnviar"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@android:drawable/ic_menu_send"
-            android:background="@android:color/transparent"
-            android:contentDescription="Enviar"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mensajes"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="14dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_buscar_msg"
+                style="@style/SS.TextInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Buscar conversación..."
+                app:startIconDrawable="@drawable/ic_search"
+                app:startIconTint="@color/text_tertiary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_buscar_msg"
+                    style="@style/SS.TextInput.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_msgs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_inbox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="72dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Estado vacío -->
+    <LinearLayout
+        android:id="@+id/layout_empty_msgs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="💬" android:textSize="48sp" android:layout_marginBottom="12dp" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Sin mensajes aún"
+            android:textSize="16sp" android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/text_primary" android:layout_marginBottom="6dp" />
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Contacta a un vendedor para empezar"
+            android:textSize="13sp" android:fontFamily="sans-serif-light"
+            android:textColor="@color/text_secondary" />
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

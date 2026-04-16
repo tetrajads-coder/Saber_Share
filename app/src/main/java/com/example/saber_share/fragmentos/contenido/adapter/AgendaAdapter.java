@@ -31,36 +31,33 @@ public class AgendaAdapter extends RecyclerView.Adapter<AgendaAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_horario, parent, false);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_horario, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AgendaDto slot = slots.get(position);
-
-        holder.tvFecha.setText("Fecha: " + (slot.getFecha() != null ? slot.getFecha() : ""));
-        holder.tvHora.setText("Hora: " + (slot.getHora() != null ? slot.getHora() : ""));
-
+        holder.tvFecha.setText("📅 " + (slot.getFecha() != null ? slot.getFecha() : ""));
+        holder.tvHora.setText("🕐 " + (slot.getHora()  != null ? slot.getHora()  : ""));
         holder.btnReservar.setOnClickListener(v -> {
             if (listener != null) listener.onReservarClick(slot);
         });
     }
 
     @Override
-    public int getItemCount() {
-        return slots == null ? 0 : slots.size();
-    }
+    public int getItemCount() { return slots == null ? 0 : slots.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvFecha, tvHora;
-        Button btnReservar;
+        Button   btnReservar;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvFecha = itemView.findViewById(R.id.tvFechaSlot);
-            tvHora = itemView.findViewById(R.id.tvHoraSlot);
-            btnReservar = itemView.findViewById(R.id.btnReservarSlot);
+            tvFecha    = itemView.findViewById(R.id.tv_slot_fecha);
+            tvHora     = itemView.findViewById(R.id.tv_slot_hora);
+            btnReservar = itemView.findViewById(R.id.btn_slot_reservar);
         }
     }
 }

@@ -1,97 +1,77 @@
 package com.example.saber_share.util.local;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.example.saber_share.Cuenta;
-
-import java.util.HashMap;
-
+/**
+ * Gestiona la sesión del usuario logueado.
+ * Guarda idUsuario, nombre, email y rol en SharedPreferences.
+ * Uso: SessionManager.getInstance(context).getUsuarioId()
+ */
 public class SessionManager {
 
     private static final String PREF_NAME = "SaberShareSession";
-    private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
-    private static final String KEY_ID = "idUsuario";
-    private static final String KEY_USUARIO = "usuario";
-    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_ID = "usuarioId";
     private static final String KEY_NOMBRE = "nombre";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_ROL = "rol";
+    private static final String KEY_LOGGED_IN = "isLoggedIn";
 
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private Context context;
+    private static SessionManager instance;
+    private final SharedPreferences prefs;
+    private final SharedPreferences.Editor editor;
 
-    private static final String KEY_LAST_CHAT_ID = "last_chat_id";
-    private static final String KEY_LAST_CHAT_NAME = "last_chat_name";
+    private SessionManager(Context context) {
+        prefs = context.getApplicationContext()
+                .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        editor = prefs.edit();
+    }
 
-    public void setLastChat(int receptorId, String receptorNombre) {
-        editor.putInt(KEY_LAST_CHAT_ID, receptorId);
-        editor.putString(KEY_LAST_CHAT_NAME, receptorNombre);
+    public static SessionManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new SessionManager(context);
+        }
+        return instance;
+    }
+
+    public void guardarSesion(int id, String nombre, String email, String rol) {
+        editor.putInt(KEY_ID, id);
+        editor.putString(KEY_NOMBRE, nombre);
+        editor.putString(KEY_EMAIL, email);
+        editor.putString(KEY_ROL, rol);
+        editor.putBoolean(KEY_LOGGED_IN, true);
         editor.apply();
     }
 
-    public int getLastChatId() {
-        return pref.getInt(KEY_LAST_CHAT_ID, -1);
+    public int getUsuarioId() {
+        return prefs.getInt(KEY_ID, -1);
+    }
+    public String getNombre() {
+        return prefs.getString(KEY_NOMBRE, "");
     }
 
-    public String getLastChatName() {
-        return pref.getString(KEY_LAST_CHAT_NAME, "");
+    public String getEmail() {
+        return prefs.getString(KEY_EMAIL, "");
     }
 
-    public SessionManager(Context context) {
-        this.context = context;
-        pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        editor = pref.edit();
-    }
-
-    public void createLoginSession(String usuario, String password, int id, String nombre) {
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        editor.putString(KEY_USUARIO, usuario);
-        editor.putString(KEY_PASSWORD, password);
-        editor.putInt(KEY_ID, id);
-        editor.putString(KEY_NOMBRE, nombre);
-        editor.commit();
-    }
-
-    public void createLoginSession(String usuario, String password, int id) {
-        createLoginSession(usuario, password, id, "");
+    public String getRol() {
+        return prefs.getString(KEY_ROL, "USUARIO");
     }
 
     public boolean isLoggedIn() {
-        return pref.getBoolean(KEY_IS_LOGGED_IN, false);
+        return prefs.getBoolean(KEY_LOGGED_IN, false);
     }
 
-    public void checkLogin() {
-        if (!this.isLoggedIn()) {
-            Intent i = new Intent(context, Cuenta.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-        }
+    public boolean esChalan() {
+        return "CHALAN".equals(getRol());
     }
 
-    public HashMap<String, String > getUserDetails() {
-        HashMap<String, String> user = new HashMap<>();
-        user.put(KEY_USUARIO, pref.getString(KEY_USUARIO, null));
-        user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
-        user.put(KEY_NOMBRE, pref.getString(KEY_NOMBRE, null));
-        return user;
+    public boolean esAdmin() {
+        return "ADMINISTRADOR".equals(getRol());
     }
 
-    public String getNombre() {
-        return pref.getString(KEY_NOMBRE, "");
-    }
-
-    public void logoutUser() {
+    public void cerrarSesion() {
         editor.clear();
-        editor.commit();
-        Intent i = new Intent(context, Cuenta.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
-    }
-
-    public int getUserId() {
-        return pref.getInt(KEY_ID, -1);
+        editor.apply();
     }
 }

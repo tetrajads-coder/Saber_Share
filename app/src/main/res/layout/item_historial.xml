@@ -1,87 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/bg_card"
     app:cardCornerRadius="14dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:gravity="center_vertical">
 
-        <!-- Titulo + Precio -->
+        <!-- Ícono tipo -->
+        <FrameLayout
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_card_default"
+            android:layout_marginEnd="12dp">
+
+            <TextView
+                android:id="@+id/tv_historial_icono"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="📚"
+                android:textSize="22sp"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <!-- Info -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvHistorialTitulo"
-                android:layout_width="0dp"
+                android:id="@+id/tv_historial_titulo"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Titulo del Curso"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#20232A" />
+                android:text="Nombre del item"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="3dp" />
 
             <TextView
-                android:id="@+id/tvHistorialPrecio"
+                android:id="@+id/tv_historial_fecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$ 0.00"
-                android:textStyle="bold"
-                android:textColor="#4CAF50"
-                android:textSize="16sp"/>
+                android:text="01 Jan 2025"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_tertiary" />
         </LinearLayout>
 
-        <!-- Tipo + Fecha + Boton -->
+        <!-- Precio + estado -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:gravity="end">
 
             <TextView
-                android:id="@+id/tvHistorialTipo"
+                android:id="@+id/tv_historial_monto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:background="#2E70FF"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:text="Curso"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:text="$0.00"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/accent_primary"
+                android:layout_marginBottom="4dp" />
 
+            <!-- Badge estado -->
             <TextView
-                android:id="@+id/tvHistorialFecha"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="01/01/2026"
-                android:textColor="#757575"
-                android:textSize="14sp" />
-
-            <Button
-                android:id="@+id/btnCalificarHistorial"
+                android:id="@+id/tv_historial_estado"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:text="Calificar"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:backgroundTint="#FF9800"
-                android:paddingHorizontal="12dp"/>
+                android:layout_height="wrap_content"
+                android:text="PAGADO"
+                android:textSize="9sp"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.06"
+                android:textColor="@color/success"
+                android:background="@drawable/bd_badge_success"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp" />
         </LinearLayout>
 
     </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

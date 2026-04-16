@@ -1,13 +1,13 @@
 package com.example.saber_share.fragmentos.cuenta;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,28 +15,31 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.saber_share.MainActivity;
 import com.example.saber_share.R;
 import com.example.saber_share.model.UsuarioDto;
 import com.example.saber_share.util.repository.UsuarioRepository;
-
-import java.util.List;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegistroSesion extends Fragment implements View.OnClickListener {
+public class RegistroSesion extends Fragment {
 
-    EditText etUsuario, etNombre, etApellido, etCorreo, etTelefono, etPassword;
-    Button btnRegistrarse, btnIniciarSesion;
+    private TextInputLayout   tilUsuario, tilNombre, tilApellido, tilCorreo, tilTelefono, tilPass;
+    private TextInputEditText etUsuario, etNombre, etApellido, etCorreo, etTelefono, etPassword;
+    private Button            btnRegistrarse, btnIniciarSesion;
+    private ProgressBar       progressRegistro;
+    private TextView          tvError;
 
     private UsuarioRepository repository;
 
-    public RegistroSesion() {}
-
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cuenta_registro_sesion, container, false);
     }
 
@@ -46,147 +49,117 @@ public class RegistroSesion extends Fragment implements View.OnClickListener {
 
         repository = new UsuarioRepository(requireContext());
 
-        etUsuario = view.findViewById(R.id.etUsuario);
-        etNombre = view.findViewById(R.id.etNombre);
-        etApellido = view.findViewById(R.id.etApellido);
-        etCorreo = view.findViewById(R.id.etCorreo);
-        etTelefono = view.findViewById(R.id.etTelefono);
-        etPassword = view.findViewById(R.id.etPassword);
-        btnRegistrarse = view.findViewById(R.id.btnRegistrarse);
+        tilUsuario   = view.findViewById(R.id.tilUsuario);
+        tilNombre    = view.findViewById(R.id.tilNombre);
+        tilApellido  = view.findViewById(R.id.tilApellido);
+        tilCorreo    = view.findViewById(R.id.tilCorreo);
+        tilTelefono  = view.findViewById(R.id.tilTelefono);
+        tilPass      = view.findViewById(R.id.tilPass);
+
+        etUsuario    = view.findViewById(R.id.etUsuario);
+        etNombre     = view.findViewById(R.id.etNombre);
+        etApellido   = view.findViewById(R.id.etApellido);
+        etCorreo     = view.findViewById(R.id.etCorreo);
+        etTelefono   = view.findViewById(R.id.etTelefono);
+        etPassword   = view.findViewById(R.id.etPassword);
+
+        btnRegistrarse   = view.findViewById(R.id.btnRegistrarse);
         btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
+        progressRegistro = view.findViewById(R.id.progress_registro);
+        tvError          = view.findViewById(R.id.tv_error_registro);
 
-        btnRegistrarse.setOnClickListener(this);
-        btnIniciarSesion.setOnClickListener(this);
+        btnRegistrarse.setOnClickListener(v -> intentarRegistro());
+        btnIniciarSesion.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_registroSesion_to_inicioSesion));
     }
 
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (id == R.id.btnRegistrarse) {
-            validarDatosYProceder();
-        } else if (id == R.id.btnIniciarSesion) {
-            Navigation.findNavController(view).navigate(R.id.action_registroSesion_to_inicioSesion);
+    private void intentarRegistro() {
+        limpiarErrores();
+        ocultarError();
+
+        String usuario  = getText(etUsuario);
+        String nombre   = getText(etNombre);
+        String apellido = getText(etApellido);
+        String correo   = getText(etCorreo);
+        String telefono = getText(etTelefono);
+        String password = getText(etPassword);
+
+        if (TextUtils.isEmpty(usuario)) {
+            tilUsuario.setError("Ingresa un nombre de usuario"); return;
         }
-    }
-
-    private void validarDatosYProceder() {
-        String usuario = etUsuario.getText().toString().trim();
-        String nombre = etNombre.getText().toString().trim();
-        String apellido = etApellido.getText().toString().trim();
-        String correo = etCorreo.getText().toString().trim();
-        String telefono = etTelefono.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (TextUtils.isEmpty(usuario)) { etUsuario.setError("Requerido"); return; }
-        if (TextUtils.isEmpty(nombre)) { etNombre.setError("Requerido"); return; }
-
-        btnRegistrarse.setEnabled(false);
-        btnRegistrarse.setText("Validando...");
-
-        repository.verificarUsuario(usuario, new Callback<List<UsuarioDto>>() {
-            @Override
-            public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
-                boolean usuarioExiste = false;
-                if (response.isSuccessful() && response.body() != null) {
-                    for (UsuarioDto u : response.body()) {
-                        if (u.getUser().equalsIgnoreCase(usuario)) {
-                            usuarioExiste = true; break;
-                        }
-                    }
-                }
-
-                if (usuarioExiste) {
-                    desbloquearBoton();
-                    etUsuario.setError("Usuario ya en uso");
-                } else {
-                    validarCorreo(usuario, nombre, apellido, correo, telefono, password);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
-                desbloquearBoton();
-                mostrarError("Error al validar usuario");
-            }
-        });
-    }
-
-    private void validarCorreo(String user, String nom, String ape, String mail, String tel, String pass) {
-        repository.verificarCorreo(mail, new Callback<List<UsuarioDto>>() {
-            @Override
-            public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
-                boolean correoExiste = false;
-                if (response.isSuccessful() && response.body() != null) {
-                    for (UsuarioDto u : response.body()) {
-                        if (u.getCorreo() != null && u.getCorreo().equalsIgnoreCase(mail)) {
-                            correoExiste = true; break;
-                        }
-                    }
-                }
-
-                if (correoExiste) {
-                    desbloquearBoton();
-                    etCorreo.setError("Correo ya registrado");
-                } else {
-                    realizarRegistro(user, nom, ape, mail, tel, pass);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
-                desbloquearBoton();
-                mostrarError("Error al validar correo");
-            }
-        });
-    }
-
-    private void realizarRegistro(String user, String nom, String ape, String mail, String tel, String pass) {
-        UsuarioDto nuevo = new UsuarioDto();
-        nuevo.setUser(user);
-        nuevo.setNombre(nom);
-        nuevo.setApellido(ape);
-        nuevo.setCorreo(mail);
-        nuevo.setTelefono(tel);
-        nuevo.setPassword(pass);
-
-        repository.registrarUsuario(nuevo, new Callback<UsuarioDto>() {
-            @Override
-            public void onResponse(Call<UsuarioDto> call, Response<UsuarioDto> response) {
-                desbloquearBoton();
-                if (response.isSuccessful() && response.body() != null) {
-                    int nuevoId = response.body().getId();
-                    // SE GUARDA EL NOMBRE TAMBIÉN
-                    repository.guardarSesion(user, pass, nuevoId, nom);
-                    irAlMain();
-                } else {
-                    mostrarError("Error al registrar");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UsuarioDto> call, Throwable t) {
-                desbloquearBoton();
-                mostrarError("Error de conexión");
-            }
-        });
-    }
-
-    private void irAlMain() {
-        Intent intent = new Intent(requireActivity(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finish();
-    }
-
-    private void desbloquearBoton() {
-        if(btnRegistrarse != null) {
-            btnRegistrarse.setEnabled(true);
-            btnRegistrarse.setText("Registrarse");
+        if (TextUtils.isEmpty(nombre)) {
+            tilNombre.setError("Ingresa tu nombre"); return;
         }
+        if (TextUtils.isEmpty(apellido)) {
+            tilApellido.setError("Ingresa tu apellido"); return;
+        }
+        if (TextUtils.isEmpty(correo) ||
+                !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            tilCorreo.setError("Ingresa un correo válido"); return;
+        }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            tilPass.setError("Mínimo 6 caracteres"); return;
+        }
+
+        setLoading(true);
+
+        UsuarioDto nuevoUsuario = new UsuarioDto();
+        nuevoUsuario.setUser(usuario);
+        nuevoUsuario.setNombre(nombre);
+        nuevoUsuario.setApellido(apellido);
+        nuevoUsuario.setCorreo(correo);
+        nuevoUsuario.setTelefono(telefono);
+        nuevoUsuario.setPassword(password);
+
+        repository.registrarUsuario(nuevoUsuario, new Callback<UsuarioDto>() {
+            @Override
+            public void onResponse(@NonNull Call<UsuarioDto> call,
+                                   @NonNull Response<UsuarioDto> response) {
+                setLoading(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    repository.guardarSesion(response.body());
+                    Toast.makeText(requireContext(),
+                            "¡Bienvenido, " + response.body().getNombre() + "!",
+                            Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(requireView())
+                            .navigate(R.id.action_registroSesion_to_main);
+                } else {
+                    mostrarError("Error al crear cuenta (código " + response.code() + ")");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UsuarioDto> call, @NonNull Throwable t) {
+                setLoading(false);
+                mostrarError("Sin conexión: " + t.getMessage());
+            }
+        });
+    }
+
+    private String getText(TextInputEditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
+    }
+
+    private void setLoading(boolean loading) {
+        progressRegistro.setVisibility(loading ? View.VISIBLE : View.GONE);
+        btnRegistrarse.setEnabled(!loading);
+        btnIniciarSesion.setEnabled(!loading);
     }
 
     private void mostrarError(String msg) {
-        if(getContext() != null)
-            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        if (tvError != null) { tvError.setText(msg); tvError.setVisibility(View.VISIBLE); }
+    }
+
+    private void ocultarError() {
+        if (tvError != null) tvError.setVisibility(View.GONE);
+    }
+
+    private void limpiarErrores() {
+        tilUsuario.setError(null);
+        tilNombre.setError(null);
+        tilApellido.setError(null);
+        tilCorreo.setError(null);
+        tilPass.setError(null);
     }
 }

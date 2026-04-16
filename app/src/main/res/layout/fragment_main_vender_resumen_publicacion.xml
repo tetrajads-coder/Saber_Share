@@ -1,221 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/publicarRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_primary"
     android:fillViewport="true"
-    android:background="#F3F4F8">
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="80dp">
 
-        <!-- Header con color y título centrado -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:background="#2E70FF">
-
-            <TextView
-                android:id="@+id/tvTituloPantalla"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Resumen de publicación"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/tvSubtitulo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Revisa que todo esté bien antes de confirmar tu venta"
-                android:textSize="13sp"
-                android:textColor="#E3ECFF"
-                android:gravity="center"
-                android:layout_marginTop="6dp" />
-        </LinearLayout>
-
-        <!-- Contenido principal con padding -->
-        <LinearLayout
+        <!-- Encabezado -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:text="Resumen"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/text_primary"
+            android:letterSpacing="-0.01"
+            android:layout_marginBottom="4dp" />
 
-            <!-- Chip / etiqueta de tipo (Curso o Clase) -->
-            <TextView
-                android:id="@+id/tvTipo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tipo: Curso"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#2E70FF"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:background="@drawable/bg_chip"
-                android:backgroundTint="#E4ECFF"
-                android:layout_marginBottom="14dp"
-                android:layout_gravity="start" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Revisa todo antes de confirmar tu publicación"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="24dp" />
 
-            <!-- Card con datos del servicio -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardResumen"
+        <!-- Tag tipo -->
+        <TextView
+            android:id="@+id/tvTipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo: Curso"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"
+            android:textColor="@color/accent_primary"
+            android:background="@drawable/bg_tag_curso"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Card resumen -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardResumen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/bg_card_elevated"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/bg_secondary"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="@android:color/white">
+                android:orientation="vertical"
+                android:padding="18dp">
 
-                <LinearLayout
+                <!-- Título -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TÍTULO"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_tertiary"
+                    android:letterSpacing="0.10"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvTituloValor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="16dp" />
 
-                    <!-- Titulo -->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Título"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="#20232A" />
-
-                    <TextView
-                        android:id="@+id/tvTituloValor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Curso de Java Avanzado"
-                        android:textSize="15sp"
-                        android:textColor="#4A4A4A"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginBottom="10dp" />
-
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EEEEEE"
-                        android:layout_marginBottom="10dp"/>
-
-                    <!-- Descripcion -->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Descripción"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="#20232A" />
-
-                    <TextView
-                        android:id="@+id/tvDescripcionValor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Aprenderás patrones de diseño..."
-                        android:textSize="14sp"
-                        android:textColor="#4A4A4A"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginBottom="10dp" />
-
-                    <TextView
-                        android:id="@+id/tvExtraLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Archivo:"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="#20232A" />
-
-                    <TextView
-                        android:id="@+id/tvExtraValor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="curso.mp4"
-                        android:textSize="14sp"
-                        android:textColor="#4A4A4A"
-                        android:layout_marginTop="2dp" />
-
-                    <!-- Divider -->
-                    <View
+                <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#EEEEEE"
-                    android:layout_marginBottom="10dp"/>
+                    android:background="@color/bg_secondary"
+                    android:layout_marginBottom="16dp" />
 
-                    <!-- Precio -->
-                    <TextView
+                <!-- Descripción -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DESCRIPCIÓN"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_tertiary"
+                    android:letterSpacing="0.10"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvDescripcionValor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Precio"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="#20232A" />
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/text_secondary"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginBottom="16dp" />
 
-                    <TextView
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bg_secondary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Extra (archivo o detalles clase) -->
+                <TextView
+                    android:id="@+id/tvExtraLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ARCHIVO"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_tertiary"
+                    android:letterSpacing="0.10"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvExtraValor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/text_secondary"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginBottom="16dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bg_secondary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Precio -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PRECIO"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/text_tertiary"
+                    android:letterSpacing="0.10"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
                     android:id="@+id/tvPrecioValor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="$ 500.00"
-                    android:textSize="15sp"
-                    android:textColor="#16A34A"
+                    android:textSize="24sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="10dp" />
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/accent_primary" />
 
-                    <!-- Divider -->
-                    <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#EEEEEE"
-                    android:layout_marginBottom="10dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-                    <!-- Archivo o Requisitos (Dinámico) -->
+        <!-- Botones -->
+        <Button
+            android:id="@+id/btnConfirmar"
+            style="@style/SS.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="CONFIRMAR PUBLICACIÓN"
+            android:layout_marginBottom="12dp" />
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Botones -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnConfirmar"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Confirmar publicación"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:backgroundTint="#2E70FF"
-                android:textColor="@android:color/white"
-                app:cornerRadius="16dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRegresar"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="12dp"
-                android:text="Volver a editar"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#2E70FF"
-                app:strokeWidth="1dp"
-                app:strokeColor="#2E70FF"
-                app:cornerRadius="16dp" />
-
-        </LinearLayout>
+        <Button
+            android:id="@+id/btnRegresar"
+            style="@style/SS.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Volver a editar" />
 
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>

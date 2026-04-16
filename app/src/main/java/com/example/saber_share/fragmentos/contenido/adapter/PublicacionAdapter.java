@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,84 +18,67 @@ import java.util.List;
 
 public class PublicacionAdapter extends RecyclerView.Adapter<PublicacionAdapter.PublicacionViewHolder> {
 
-    private Context context;
-    private List<Publicacion> listaOriginal;
-    private List<Publicacion> listaFiltrada;
-    private int usuarioActualId; // <--- NUEVO: ID del usuario logueado
-    private OnItemClickListener listener; // Para manejar el click
-
-    // Interfaz para comunicar clicks al fragmento
     public interface OnItemClickListener {
         void onItemClick(Publicacion publicacion);
     }
 
-    public PublicacionAdapter(Context context, List<Publicacion> lista, int usuarioActualId, OnItemClickListener listener) {
-        this.context = context;
-        this.listaOriginal = lista;
-        this.listaFiltrada = new ArrayList<>(lista);
+    private final Context context;
+    private List<Publicacion> listaOriginal;
+    private List<Publicacion> listaFiltrada;
+    private final int usuarioActualId;
+    private final OnItemClickListener listener;
+
+    public PublicacionAdapter(Context context, List<Publicacion> lista,
+                              int usuarioActualId, OnItemClickListener listener) {
+        this.context         = context;
+        this.listaOriginal   = lista;
+        this.listaFiltrada   = new ArrayList<>(lista);
         this.usuarioActualId = usuarioActualId;
-        this.listener = listener;
+        this.listener        = listener;
     }
 
     @NonNull
     @Override
     public PublicacionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_publicacion, parent, false);
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_publicacion, parent, false);
         return new PublicacionViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PublicacionViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PublicacionViewHolder h, int position) {
         Publicacion p = listaFiltrada.get(position);
 
-        String prefijo = Publicacion.TIPO_CURSO.equals(p.getTipo()) ? "Curso: " : "Clase 1 a 1: ";
-        holder.tvTitulo.setText(prefijo + p.getTitulo());
-        holder.tvPrecio.setText(String.format("$ %.2f MXN", p.getPrecio()));
-        String calif = (p.getCalificacion() != null && !p.getCalificacion().equals("0")) ? p.getCalificacion() : "N/A";
-        holder.tvCalificacion.setText(calif + " ★");
+        // Tipo tag
+        h.tvTipo.setText(Publicacion.TIPO_CURSO.equals(p.getTipo()) ? "CURSO" : "CLASE 1A1");
 
-        // --- LÓGICA DE DUEÑO ---
-        // OJO: Aquí asumimos que 'Publicacion' tiene un método getAutorId().
-        // Si no lo tiene, necesitamos agregarlo al modelo Publicacion (ver Paso 1.1)
+        // Título y descripción
+        h.tvTitulo.setText(p.getTitulo());
+        if (h.tvDescripcion != null)
+            h.tvDescripcion.setText(p.getDescripcion() != null ? p.getDescripcion() : "");
+
+        // Precio
+        h.tvPrecio.setText(String.format("$%.2f", p.getPrecio()));
+
+        // Vendedor
         boolean esMio = p.getIdAutor() == usuarioActualId;
+        String nombreAutor = esMio ? "Tú" : (p.getAutor() != null ? p.getAutor() : "Anónimo");
+        h.tvVendedor.setText(nombreAutor);
+        h.tvVendedorInicial.setText(nombreAutor.isEmpty() ? "V"
+                : String.valueOf(nombreAutor.charAt(0)).toUpperCase());
 
-        if (esMio) {
-            holder.tvAutor.setText("Hecho por ti");
-            holder.btnAccion.setText("Detalles");
-            holder.btnAccion.setBackgroundColor(context.getResources().getColor(android.R.color.darker_gray)); // Opcional: cambiar color
-        } else {
-            holder.tvAutor.setText("Por: " + (p.getAutor() != null ? p.getAutor() : "Anónimo"));
-            if (Publicacion.TIPO_CURSO.equals(p.getTipo())) {
-                holder.btnAccion.setText("Pagar");
-            } else {
-                holder.btnAccion.setText("Agendar");
-            }
-            // Restaurar color original si es necesario
-            // holder.btnAccion.setBackgroundTintList(...);
-        }
+        // Calificación
+        String calif = (p.getCalificacion() != null && !p.getCalificacion().equals("0"))
+                ? "★ " + p.getCalificacion() : "★ 0.0";
+        h.tvEstrellas.setText(calif);
 
-        // Imágenes dummy
-        if (Publicacion.TIPO_CURSO.equals(p.getTipo())) {
-            holder.imgPortada.setImageResource(R.drawable.img);
-        } else {
-            holder.imgPortada.setImageResource(R.drawable.img_1);
-        }
-
-        // Click en el botón (Acción principal)
-        holder.btnAccion.setOnClickListener(v -> {
-            if (listener != null) listener.onItemClick(p);
-        });
-
-        // Click en la tarjeta completa (también lleva a detalles)
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onItemClick(p);
-        });
+        // Click en botón Ver y en la card completa
+        h.btnVer.setOnClickListener(v -> { if (listener != null) listener.onItemClick(p); });
+        h.itemView.setOnClickListener(v -> { if (listener != null) listener.onItemClick(p); });
     }
 
     @Override
-    public int getItemCount() {
-        return listaFiltrada.size();
-    }
+    public int getItemCount() { return listaFiltrada.size(); }
 
     public void setDatos(List<Publicacion> nuevosDatos) {
         this.listaOriginal = nuevosDatos;
@@ -106,14 +87,13 @@ public class PublicacionAdapter extends RecyclerView.Adapter<PublicacionAdapter.
     }
 
     public void filtrar(String texto) {
-        // ... (tu lógica de filtrado igual) ...
-        // (Asegúrate de actualizar listaFiltrada y notifyDataSetChanged)
-        if (texto.isEmpty()) {
+        if (texto == null || texto.isEmpty()) {
             listaFiltrada = new ArrayList<>(listaOriginal);
         } else {
             List<Publicacion> temp = new ArrayList<>();
             for (Publicacion p : listaOriginal) {
-                if (p.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
+                if (p.getTitulo() != null &&
+                        p.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
                     temp.add(p);
                 }
             }
@@ -122,20 +102,22 @@ public class PublicacionAdapter extends RecyclerView.Adapter<PublicacionAdapter.
         notifyDataSetChanged();
     }
 
-
     static class PublicacionViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgPortada;
-        TextView tvTitulo, tvAutor, tvCalificacion, tvPrecio;
-        Button btnAccion;
+        TextView tvTipo, tvTitulo, tvDescripcion, tvPrecio;
+        TextView tvVendedor, tvVendedorInicial, tvEstrellas, tvNReviews;
+        Button   btnVer;
 
-        public PublicacionViewHolder(@NonNull View itemView) {
+        PublicacionViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgPortada = itemView.findViewById(R.id.imgPortada);
-            tvTitulo = itemView.findViewById(R.id.tvTituloPub);
-            tvAutor = itemView.findViewById(R.id.tvAutorPub);
-            tvCalificacion = itemView.findViewById(R.id.tvCalificacionPub);
-            tvPrecio = itemView.findViewById(R.id.tvPrecioPub);
-            btnAccion = itemView.findViewById(R.id.btnAccionPub);
+            tvTipo            = itemView.findViewById(R.id.tv_item_tipo);
+            tvTitulo          = itemView.findViewById(R.id.tv_item_titulo);
+            tvDescripcion     = itemView.findViewById(R.id.tv_item_descripcion);
+            tvPrecio          = itemView.findViewById(R.id.tv_item_precio);
+            tvVendedor        = itemView.findViewById(R.id.tv_item_vendedor);
+            tvVendedorInicial = itemView.findViewById(R.id.tv_item_vendedor_inicial);
+            tvEstrellas       = itemView.findViewById(R.id.tv_item_estrellas);
+            tvNReviews        = itemView.findViewById(R.id.tv_item_n_reviews);
+            btnVer            = itemView.findViewById(R.id.btn_item_ver);
         }
     }
 }

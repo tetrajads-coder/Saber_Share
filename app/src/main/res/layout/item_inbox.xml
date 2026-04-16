@@ -1,36 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="@android:color/white"
-    android:layout_marginBottom="10dp"
-    android:orientation="vertical">
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/bg_card"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border"
+    app:strokeWidth="1dp">
 
-    <TextView
-        android:id="@+id/tvNombre"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="#20232A" />
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/tvUltimo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ultimo mensaje..."
-        android:textSize="14sp"
-        android:textColor="#6B7280"
-        android:layout_marginTop="4dp" />
+        <!-- Avatar con badge no leídos -->
+        <FrameLayout
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="12dp">
 
-    <TextView
-        android:id="@+id/tvFecha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2026-01-14 10:20"
-        android:textSize="12sp"
-        android:textColor="#9CA3AF"
-        android:layout_marginTop="6dp" />
-</LinearLayout>
+            <FrameLayout
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_avatar">
+
+                <TextView
+                    android:id="@+id/tv_inbox_inicial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="U"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/accent_primary"
+                    android:gravity="center" />
+            </FrameLayout>
+
+            <!-- Badge de mensajes no leídos -->
+            <TextView
+                android:id="@+id/tv_inbox_badge"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="top|end"
+                android:text="0"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:fontFamily="sans-serif-condensed"
+                android:gravity="center"
+                android:background="@drawable/bg_badge_notif"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Nombre + último mensaje -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_inbox_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre del usuario"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_marginBottom="3dp" />
+
+            <TextView
+                android:id="@+id/tv_inbox_ultimo_mensaje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Último mensaje de la conversación..."
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/text_secondary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Hora -->
+        <TextView
+            android:id="@+id/tv_inbox_hora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:30"
+            android:textSize="11sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/text_tertiary"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

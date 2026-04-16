@@ -16,7 +16,7 @@ public class ServicioRepository {
     private final ServicioApi api;
 
     public ServicioRepository(Context context) {
-        api = RetrofitClient.getClient().create(ServicioApi.class);
+        api = RetrofitClient.getInstance().create(ServicioApi.class);
     }
 
     public void obtenerTodos(Callback<List<ServicioDto>> callback) {

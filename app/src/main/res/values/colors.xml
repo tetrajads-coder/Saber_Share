@@ -1,17 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#1E88E5</color>
-    <color name="colorPrimaryDark">#1565C0</color>
-    <color name="colorOnPrimary">#FFFFFF</color>
-    <color name="purple_500">#7403FF</color>
 
-    <color name="colorSecondary">#E3F2FD</color>
-    <color name="colorOnSecondary">#1E88E5</color>
+    <!-- ═══════════════════════════════════════════════
+         SABER SHARE — DESIGN SYSTEM v2.0
+         Tema: Dark Premium / Edtech Profesional
+         Paleta: Azul medianoche + Lima vibrante + Blanco perla
+    ═══════════════════════════════════════════════ -->
 
-    <color name="bgLight">#F5F5F5</color>
-    <color name="textPrimary">#212121</color>
-    <color name="textSecondary">#757575</color>
-    <color name="strokeLight">#D6D6D6</color>
+    <!-- Fondos principales -->
+    <color name="bg_primary">#0A0E1A</color>       <!-- Azul medianoche profundo -->
+    <color name="bg_secondary">#111827</color>      <!-- Gris oscuro azulado -->
+    <color name="bg_card">#1A2236</color>           <!-- Card base -->
+    <color name="bg_card_elevated">#1F2A40</color>  <!-- Card elevada -->
+    <color name="bg_input">#0F172A</color>
+
+    <color name="strokeLight">#33FFFFFF</color>
+    <!-- Fondo inputs -->
+
+    <!-- Acento principal — Lima vibrante -->
+    <color name="accent_primary">#A3E635</color>    <!-- Lima brillante -->
+    <color name="accent_secondary">#84CC16</color>  <!-- Lima media -->
+    <color name="accent_dark">#4D7C0F</color>       <!-- Lima oscura -->
+    <color name="accent_glow">#A3E63533</color>     <!-- Lima con transparencia (glow) -->
+
+    <!-- Acento secundario — Azul eléctrico -->
+    <color name="accent_blue">#38BDF8</color>       <!-- Azul cielo brillante -->
+    <color name="accent_blue_dark">#0284C7</color>
+
+    <!-- Texto -->
+    <color name="text_primary">#F1F5F9</color>      <!-- Blanco perla -->
+    <color name="text_secondary">#94A3B8</color>    <!-- Gris azulado medio -->
+    <color name="text_tertiary">#475569</color>     <!-- Gris oscuro sutil -->
+    <color name="text_on_accent">#0A0E1A</color>    <!-- Texto sobre botones lime -->
+    <color name="text_hint">#334155</color>
+
+    <!-- Estados -->
+    <color name="success">#22C55E</color>
+    <color name="error">#EF4444</color>
+    <color name="warning">#F59E0B</color>
+    <color name="info">#38BDF8</color>
+
+    <!-- Bordes y divisores -->
+    <color name="border">#1E293B</color>
+    <color name="border_focus">#A3E635</color>
+    <color name="divider">#1A2236</color>
+
+    <!-- PayPal -->
+    <color name="paypal_blue">#003087</color>
+    <color name="paypal_light">#009CDE</color>
+
+    <!-- Estrellas -->
+    <color name="star_filled">#F59E0B</color>
+    <color name="star_empty">#334155</color>
+
+    <!-- Roles de usuario -->
+    <color name="rol_chalan">#A3E635</color>
+    <color name="rol_usuario">#38BDF8</color>
+    <color name="rol_admin">#EF4444</color>
+
+    <!-- Gradientes (usados en shapes) -->
+    <color name="gradient_start">#0A0E1A</color>
+    <color name="gradient_end">#111827</color>
+    <color name="gradient_accent_start">#A3E635</color>
+    <color name="gradient_accent_end">#38BDF8</color>
+
+    <!-- Legacy (Material requeridos) -->
+    <color name="colorPrimary">#A3E635</color>
+    <color name="colorPrimaryDark">#0A0E1A</color>
+    <color name="colorAccent">#A3E635</color>
+
 </resources>

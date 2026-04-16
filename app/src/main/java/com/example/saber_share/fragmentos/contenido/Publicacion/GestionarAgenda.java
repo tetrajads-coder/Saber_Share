@@ -50,36 +50,25 @@ public class GestionarAgenda extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // UI
         rvMisSlots = view.findViewById(R.id.rvMisSlots);
-        tvVacio = view.findViewById(R.id.tvVacioProfe);
+        tvVacio    = view.findViewById(R.id.tvVacioProfe);
         rvMisSlots.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // ✅ Obtener argumentos de forma segura
         if (getArguments() != null) {
             servicioId = getArguments().getInt("servicioId", -1);
             profesorId = getArguments().getInt("profesorId", -1);
         }
 
-        // ✅ Validar que lleguen correctos
         if (servicioId <= 0 || profesorId <= 0) {
-            Toast.makeText(
-                    getContext(),
+            Toast.makeText(getContext(),
                     "ERROR: servicioId o profesorId invalido\nservicioId=" + servicioId + "\nprofesorId=" + profesorId,
-                    Toast.LENGTH_LONG
-            ).show();
-
-            // Ocultamos lista por si acaso
+                    Toast.LENGTH_LONG).show();
             tvVacio.setVisibility(View.VISIBLE);
             rvMisSlots.setVisibility(View.GONE);
-
             return;
         }
 
-        // Boton agregar
         view.findViewById(R.id.btnAgregarSlot).setOnClickListener(v -> abrirSelectorFecha());
-
-        // Cargar datos
         cargarMisHorarios();
     }
 
@@ -100,8 +89,6 @@ public class GestionarAgenda extends Fragment {
     }
 
     private void guardarNuevoSlot(String fecha, String hora) {
-
-        // ✅ Segunda validacion antes de mandar al backend
         if (servicioId <= 0) {
             Toast.makeText(getContext(), "Servicio invalido: " + servicioId, Toast.LENGTH_LONG).show();
             return;
@@ -114,81 +101,70 @@ public class GestionarAgenda extends Fragment {
         nuevo.setProfesorId(profesorId);
         nuevo.setEstado("DISPONIBLE");
 
-        AgendaApi api = RetrofitClient.getClient().create(AgendaApi.class);
-
-        api.crearSlot(nuevo).enqueue(new Callback<AgendaDto>() {
-            @Override
-            public void onResponse(Call<AgendaDto> call, Response<AgendaDto> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), "Horario agregado ✅", Toast.LENGTH_SHORT).show();
-                    cargarMisHorarios();
-                } else {
-                    Toast.makeText(getContext(), "Error al guardar: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AgendaDto> call, Throwable t) {
-                Toast.makeText(getContext(), "Fallo de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        RetrofitClient.getInstance().create(AgendaApi.class)
+                .crearSlot(nuevo).enqueue(new Callback<AgendaDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<AgendaDto> call,
+                                           @NonNull Response<AgendaDto> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(getContext(), "Horario agregado ✅", Toast.LENGTH_SHORT).show();
+                            cargarMisHorarios();
+                        } else {
+                            Toast.makeText(getContext(), "Error al guardar: " + response.code(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<AgendaDto> call, @NonNull Throwable t) {
+                        Toast.makeText(getContext(), "Fallo de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void cargarMisHorarios() {
-        AgendaApi api = RetrofitClient.getClient().create(AgendaApi.class);
-
-        api.getSlotsPorServicio(servicioId).enqueue(new Callback<List<AgendaDto>>() {
-            @Override
-            public void onResponse(Call<List<AgendaDto>> call, Response<List<AgendaDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-
-                    List<AgendaDto> lista = response.body();
-
-                    if (lista.isEmpty()) {
-                        tvVacio.setVisibility(View.VISIBLE);
-                        rvMisSlots.setVisibility(View.GONE);
-                    } else {
-                        tvVacio.setVisibility(View.GONE);
-                        rvMisSlots.setVisibility(View.VISIBLE);
-
-                        rvMisSlots.setAdapter(new AgendaProfeAdapter(lista, new AgendaProfeAdapter.OnSlotActionListener() {
-                            @Override
-                            public void onEliminarClick(int idAgenda) {
-                                eliminarSlot(idAgenda);
+        RetrofitClient.getInstance().create(AgendaApi.class)
+                .getSlotsPorServicio(servicioId).enqueue(new Callback<List<AgendaDto>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<AgendaDto>> call,
+                                           @NonNull Response<List<AgendaDto>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<AgendaDto> lista = response.body();
+                            if (lista.isEmpty()) {
+                                tvVacio.setVisibility(View.VISIBLE);
+                                rvMisSlots.setVisibility(View.GONE);
+                            } else {
+                                tvVacio.setVisibility(View.GONE);
+                                rvMisSlots.setVisibility(View.VISIBLE);
+                                rvMisSlots.setAdapter(new AgendaProfeAdapter(lista,
+                                        new AgendaProfeAdapter.OnSlotActionListener() {
+                                            @Override
+                                            public void onEliminarClick(int idAgenda) { eliminarSlot(idAgenda); }
+                                            @Override
+                                            public void onVerDetalleClick(AgendaDto slot) { mostrarDetalleAlumno(slot); }
+                                        }));
                             }
-
-                            @Override
-                            public void onVerDetalleClick(AgendaDto slot) {
-                                mostrarDetalleAlumno(slot);
-                            }
-                        }));
+                        } else {
+                            Toast.makeText(getContext(), "Error al cargar: " + response.code(), Toast.LENGTH_LONG).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(getContext(), "Error al cargar: " + response.code(), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<AgendaDto>> call, Throwable t) {
-                Toast.makeText(getContext(), "Fallo al cargar: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<List<AgendaDto>> call, @NonNull Throwable t) {
+                        Toast.makeText(getContext(), "Fallo al cargar: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void mostrarDetalleAlumno(AgendaDto slot) {
-        String nombre = (slot.getNombreAlumno() != null) ? slot.getNombreAlumno() : "Estudiante";
-
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        String nombre = slot.getNombreAlumno() != null ? slot.getNombreAlumno() : "Estudiante";
+        new AlertDialog.Builder(getContext())
                 .setTitle("Detalle de la Reserva")
-                .setMessage("Clase reservada por:\n" + nombre + "\n\nFecha: " + slot.getFecha() + " " + slot.getHora())
+                .setMessage("Clase reservada por:\n" + nombre
+                        + "\n\nFecha: " + slot.getFecha() + " " + slot.getHora())
                 .setPositiveButton("Enviar Mensaje", (d, w) -> {
                     Navigation.findNavController(requireView()).navigate(R.id.mensajes);
                     Toast.makeText(getContext(), "Abriendo chat con " + nombre, Toast.LENGTH_SHORT).show();
                 })
                 .setNeutralButton("Cerrar", null)
-                .create();
-
-        dialog.show();
+                .create().show();
     }
 
     private void eliminarSlot(int idAgenda) {

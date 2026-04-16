@@ -18,35 +18,31 @@ public class UsuarioRepository {
     private final SessionManager sessionManager;
 
     public UsuarioRepository(Context context) {
-        this.api = RetrofitClient.getClient().create(UsuarioApi.class);
-        this.sessionManager = new SessionManager(context);
+        this.api = RetrofitClient.getInstance().create(UsuarioApi.class);
+        this.sessionManager = SessionManager.getInstance(context);
     }
 
-    public void verificarUsuario(String usuario, Callback<List<UsuarioDto>> callback) {
-        Call<List<UsuarioDto>> call = api.login(usuario);
-        call.enqueue(callback);
+    // Busca por nombre de usuario → GET /api/usuario?user=xxx
+    public void verificarUsuario(String user, Callback<List<UsuarioDto>> callback) {
+        api.buscarPorUsuario(user).enqueue(callback);
     }
 
+    // Busca por correo → GET /api/usuario?correo=xxx
     public void verificarCorreo(String correo, Callback<List<UsuarioDto>> callback) {
-        Call<List<UsuarioDto>> call = api.BuscaCorreo(correo);
-        call.enqueue(callback);
+        api.buscarPorCorreo(correo).enqueue(callback);
     }
 
+    // Registrar → POST /api/usuario
     public void registrarUsuario(UsuarioDto nuevoUsuario, Callback<UsuarioDto> callback) {
-        Call<UsuarioDto> call = api.registrar(nuevoUsuario);
-        call.enqueue(callback);
+        api.registrar(nuevoUsuario).enqueue(callback);
     }
 
-    public void guardarSesion(UsuarioDto usuarioDto) {
-        sessionManager.createLoginSession(
-                usuarioDto.getUser() != null ? usuarioDto.getUser() : usuarioDto.getCorreo(),
-                usuarioDto.getPassword(),
-                usuarioDto.getId(),
-                usuarioDto.getNombre()
+    public void guardarSesion(UsuarioDto dto) {
+        sessionManager.guardarSesion(
+                dto.getId(),
+                dto.getNombre(),
+                dto.getCorreo(),
+                "USUARIO"
         );
-    }
-
-    public void guardarSesion(String usuario, String password, int id, String nombre) {
-        sessionManager.createLoginSession(usuario, password, id, nombre);
     }
 }

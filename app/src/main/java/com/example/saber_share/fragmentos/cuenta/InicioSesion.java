@@ -1,13 +1,13 @@
 package com.example.saber_share.fragmentos.cuenta;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,10 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.saber_share.MainActivity;
 import com.example.saber_share.R;
 import com.example.saber_share.model.UsuarioDto;
 import com.example.saber_share.util.repository.UsuarioRepository;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
@@ -26,16 +27,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class InicioSesion extends Fragment implements View.OnClickListener {
+public class InicioSesion extends Fragment {
 
-    EditText etCorreo; // Este campo acepta Usuario o Correo
-    EditText etPassword;
-    Button btnIniciarSesion;
-    Button btnRegistrarse;
+    private TextInputLayout   tilUsuario, tilPassword;
+    private TextInputEditText etUsuario, etPassword;
+    private Button            btnLogin, btnIrRegistro;
+    private ProgressBar       progressLogin;
+    private TextView          tvError;
 
     private UsuarioRepository repository;
 
-    public InicioSesion() {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_cuenta_inicio_sesion, container, false);
     }
 
     @Override
@@ -44,107 +51,91 @@ public class InicioSesion extends Fragment implements View.OnClickListener {
 
         repository = new UsuarioRepository(requireContext());
 
-        etCorreo = view.findViewById(R.id.etCorreo);
-        etPassword = view.findViewById(R.id.etPassword);
-        btnIniciarSesion = view.findViewById(R.id.btnIniciarSesion);
-        btnRegistrarse = view.findViewById(R.id.btnRegistrarse);
+        tilUsuario    = view.findViewById(R.id.til_email);      // reutilizamos el mismo TIL
+        tilPassword   = view.findViewById(R.id.til_password);
+        etUsuario     = view.findViewById(R.id.et_email);       // reutilizamos el mismo ET
+        etPassword    = view.findViewById(R.id.et_password);
+        btnLogin      = view.findViewById(R.id.btn_login);
+        btnIrRegistro = view.findViewById(R.id.btn_ir_registro);
+        progressLogin = view.findViewById(R.id.progress_login);
+        tvError       = view.findViewById(R.id.tv_error_login);
 
-        btnIniciarSesion.setOnClickListener(this);
-        btnRegistrarse.setOnClickListener(this);
-    }
+        // Cambiar hint a "Usuario"
+        tilUsuario.setHint("Nombre de usuario");
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_cuenta_inicio_sesion, container, false);
-    }
-
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-
-        if (id == R.id.btnIniciarSesion) {
-            intentarLogin();
-        } else if (id == R.id.btnRegistrarse) {
-            Navigation.findNavController(view).navigate(R.id.action_inicioSesion_to_registroSesion);
-        }
+        btnLogin.setOnClickListener(v -> intentarLogin());
+        btnIrRegistro.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_inicioSesion_to_registroSesion));
     }
 
     private void intentarLogin() {
-        String input = etCorreo.getText().toString().trim();
-        String passwordInput = etPassword.getText().toString().trim();
+        ocultarError();
 
-        if (TextUtils.isEmpty(input)) {
-            etCorreo.setError("Ingresa tu usuario o correo");
+        String usuario  = getText(etUsuario);
+        String password = getText(etPassword);
+
+        if (TextUtils.isEmpty(usuario)) {
+            tilUsuario.setError("Ingresa tu nombre de usuario");
             return;
         }
-        if (TextUtils.isEmpty(passwordInput)) {
-            etPassword.setError("Ingresa tu contraseña");
+        if (TextUtils.isEmpty(password)) {
+            tilPassword.setError("Ingresa tu contraseña");
             return;
         }
 
-        btnIniciarSesion.setEnabled(false);
-        btnIniciarSesion.setText("Cargando...");
+        setLoading(true);
 
-        // Intentamos buscar por NOMBRE DE USUARIO (usu_usu)
-        repository.verificarUsuario(input, new Callback<List<UsuarioDto>>() {
+        repository.verificarUsuario(usuario, new Callback<List<UsuarioDto>>() {
             @Override
-            public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
+            public void onResponse(@NonNull Call<List<UsuarioDto>> call,
+                                   @NonNull Response<List<UsuarioDto>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    validarPasswordYEntrar(response.body().get(0), passwordInput);
+                    validarPasswordYEntrar(response.body().get(0), password);
                 } else {
-                    // Si no lo encuentra por usuario, intentamos por CORREO
-                    intentarLoginPorCorreo(input, passwordInput);
+                    setLoading(false);
+                    mostrarError("Usuario no encontrado");
                 }
             }
 
             @Override
-            public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
-                desbloquearBoton();
-                Toast.makeText(getContext(), "Error de conexión", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<List<UsuarioDto>> call, @NonNull Throwable t) {
+                setLoading(false);
+                mostrarError("Error de conexión: " + t.getMessage());
             }
         });
     }
 
-    private void intentarLoginPorCorreo(String correo, String pass) {
-        repository.verificarCorreo(correo, new Callback<List<UsuarioDto>>() {
-            @Override
-            public void onResponse(Call<List<UsuarioDto>> call, Response<List<UsuarioDto>> response) {
-                desbloquearBoton();
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    validarPasswordYEntrar(response.body().get(0), pass);
-                } else {
-                    Toast.makeText(getContext(), "Usuario o correo no encontrado", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<UsuarioDto>> call, Throwable t) {
-                desbloquearBoton();
-                Toast.makeText(getContext(), "Error al validar correo", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void validarPasswordYEntrar(UsuarioDto u, String passIngresada) {
-        if (passIngresada.equals(u.getPassword())) {
-            repository.guardarSesion(u);
-            irAlMain();
+    private void validarPasswordYEntrar(UsuarioDto usuario, String passIngresada) {
+        if (passIngresada.equals(usuario.getPassword())) {
+            repository.guardarSesion(usuario);
+            Toast.makeText(requireContext(),
+                    "¡Bienvenido, " + usuario.getNombre() + "!", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(requireView())
+                    .navigate(R.id.action_inicioSesion_to_main);
         } else {
-            desbloquearBoton();
-            Toast.makeText(getContext(), "Contraseña incorrecta", Toast.LENGTH_SHORT).show();
+            setLoading(false);
+            mostrarError("Contraseña incorrecta");
         }
     }
 
-    private void desbloquearBoton() {
-        btnIniciarSesion.setEnabled(true);
-        btnIniciarSesion.setText("Iniciar sesión");
+    private String getText(TextInputEditText et) {
+        return et.getText() != null ? et.getText().toString().trim() : "";
     }
 
-    private void irAlMain() {
-        Toast.makeText(getContext(), "Bienvenido", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(requireActivity(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        requireActivity().finish();
+    private void setLoading(boolean loading) {
+        if (progressLogin != null) progressLogin.setVisibility(loading ? View.VISIBLE : View.GONE);
+        if (btnLogin      != null) btnLogin.setEnabled(!loading);
+        if (btnIrRegistro != null) btnIrRegistro.setEnabled(!loading);
+    }
+
+    private void mostrarError(String mensaje) {
+        if (tvError != null) { tvError.setText(mensaje); tvError.setVisibility(View.VISIBLE); }
+    }
+
+    private void ocultarError() {
+        if (tvError    != null) tvError.setVisibility(View.GONE);
+        if (tilUsuario != null) tilUsuario.setError(null);
+        if (tilPassword!= null) tilPassword.setError(null);
     }
 }

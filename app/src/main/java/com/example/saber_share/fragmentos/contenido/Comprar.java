@@ -1,33 +1,27 @@
 package com.example.saber_share.fragmentos.contenido;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.saber_share.R;
-import com.example.saber_share.fragmentos.contenido.adapter.PublicacionAdapter;
-import com.example.saber_share.model.CursoDto;
-import com.example.saber_share.model.Publicacion;
-import com.example.saber_share.model.ServicioDto;
-import com.example.saber_share.util.api.CursoApi;
+import com.example.saber_share.model.PaypalRequestDto;
+import com.example.saber_share.model.PaypalResponseDto;
 import com.example.saber_share.util.api.RetrofitClient;
-import com.example.saber_share.util.api.ServicioApi;
 import com.example.saber_share.util.local.SessionManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,16 +29,45 @@ import retrofit2.Response;
 
 public class Comprar extends Fragment {
 
-    private RecyclerView rvResultados;
-    private EditText etBuscar;
-    private PublicacionAdapter adapter;
-    private List<Publicacion> listaGlobal = new ArrayList<>();
-    private SessionManager sessionManager;
+    public static final String ARG_ITEM_ID     = "itemId";
+    public static final String ARG_TIPO        = "tipo";
+    public static final String ARG_TITULO      = "titulo";
+    public static final String ARG_PRECIO      = "precio";
+    public static final String ARG_DESCRIPCION = "descripcion";
 
-    public Comprar() {}
+    public static final String PAYPAL_RETURN_SCHEME = "sabersha";
+    public static final String PAYPAL_RETURN_HOST   = "paypal-return";
+
+    private static final String PREFS_NAME    = "paypal_pending";
+    private static final String KEY_ITEM_ID   = "itemId";
+    private static final String KEY_TIPO      = "tipo";
+    private static final String KEY_USUARIO   = "usuarioId";
+
+    private TextView    tvTitulo, tvPrecio, tvDescripcion, tvTipo;
+    private Button      btnPagar;
+    private ProgressBar progressBar;
+
+    private int    itemId;
+    private String tipo, titulo, descripcion;
+    private double precio;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            itemId      = getArguments().getInt(ARG_ITEM_ID, -1);
+            tipo        = getArguments().getString(ARG_TIPO, "CURSO");
+            titulo      = getArguments().getString(ARG_TITULO, "");
+            precio      = getArguments().getFloat(ARG_PRECIO, 0f);
+            descripcion = getArguments().getString(ARG_DESCRIPCION, "");
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_comprar, container, false);
     }
 
@@ -52,121 +75,170 @@ public class Comprar extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sessionManager = new SessionManager(requireContext());
+        tvTitulo      = view.findViewById(R.id.tv_comprar_titulo);
+        tvPrecio      = view.findViewById(R.id.tv_comprar_precio);
+        tvDescripcion = view.findViewById(R.id.tv_comprar_descripcion);
+        tvTipo        = view.findViewById(R.id.tv_comprar_tipo);
+        btnPagar      = view.findViewById(R.id.btn_pagar_paypal);
+        progressBar   = view.findViewById(R.id.progress_comprar);
 
-        rvResultados = view.findViewById(R.id.rvResultadosBusqueda);
-        etBuscar = view.findViewById(R.id.etBuscarComprar);
+        tvTitulo.setText(titulo);
+        tvPrecio.setText(String.format("$%.2f MXN", precio));
+        tvDescripcion.setText(descripcion);
+        tvTipo.setText("CURSO".equals(tipo) ? "📚 Curso" : "🎓 Clase 1a1");
 
-        // Configurar RecyclerView
-        rvResultados.setLayoutManager(new LinearLayoutManager(getContext()));
+        btnPagar.setOnClickListener(v -> iniciarPagoPaypal());
+        view.findViewById(R.id.btn_cancelar_compra)
 
-        // OBTENER EL ID DEL USUARIO ACTUAL
-        int miId = sessionManager.getUserId();
+                .setOnClickListener(v -> requireActivity().onBackPressed());
+        // Botón atrás del toolbar
+        com.google.android.material.appbar.MaterialToolbar toolbar =
+                view.findViewById(R.id.toolbar_comprar);
+        if (toolbar != null) {
+            toolbar.setNavigationOnClickListener(v ->
+                    requireActivity().onBackPressed()
+            );
+        }
+    }
 
-        // CREAR ADAPTER CON LOS 4 PARÁMETROS NUEVOS
-        adapter = new PublicacionAdapter(
-                getContext(),
-                new ArrayList<>(),
-                miId,
-                this::irADetalle // Referencia al método que maneja el clic
-        );
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() == null || getActivity().getIntent() == null) return;
 
-        rvResultados.setAdapter(adapter);
+        Uri uri = getActivity().getIntent().getData();
+        if (uri != null
+                && PAYPAL_RETURN_SCHEME.equals(uri.getScheme())
+                && PAYPAL_RETURN_HOST.equals(uri.getHost())) {
 
-        // Cargar datos desde API
-        cargarDatos();
+            String paymentId = uri.getQueryParameter("paymentId");
+            String payerId   = uri.getQueryParameter("PayerID");
 
-        // Configurar Buscador
-        etBuscar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filtrar(s.toString());
+            if (paymentId != null && payerId != null) {
+                // Recuperar datos desde SharedPreferences
+                SharedPreferences prefs = requireContext()
+                        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                int    savedItemId   = prefs.getInt(KEY_ITEM_ID, -1);
+                String savedTipo     = prefs.getString(KEY_TIPO, "CURSO");
+                int    savedUsuario  = prefs.getInt(KEY_USUARIO, -1);
+
+                // Si hay datos guardados usarlos, sino usar los del fragment
+                int    resolvedItemId  = savedItemId  > 0 ? savedItemId  : itemId;
+                String resolvedTipo    = savedTipo    != null ? savedTipo : tipo;
+                int    resolvedUsuario = savedUsuario > 0 ? savedUsuario
+                        : SessionManager.getInstance(requireContext()).getUsuarioId();
+
+                confirmarPago(paymentId, payerId, resolvedUsuario, resolvedItemId, resolvedTipo);
+                getActivity().setIntent(new Intent());
+                // Limpiar prefs después de usar
+                prefs.edit().clear().apply();
             }
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+        }
     }
 
-    private void irADetalle(Publicacion p) {
-        Bundle bundle = new Bundle();
-        bundle.putInt("idOriginal", p.getIdOriginal());
-        bundle.putInt("idAutor", p.getIdAutor());
-        bundle.putString("tipo", p.getTipo());
-        bundle.putString("titulo", p.getTitulo());
-        bundle.putString("descripcion", p.getDescripcion());
-        bundle.putDouble("precio", p.getPrecio());
-        bundle.putString("autor", p.getAutor());
-        bundle.putString("calificacion", p.getCalificacion());
-        bundle.putString("extra", p.getExtraInfo());
+    // ── Paso 1: Crear orden ──────────────────────────────────────────────────
 
-        Navigation.findNavController(requireView()).navigate(R.id.detallePublicacion, bundle);
-    }
+    private void iniciarPagoPaypal() {
+        int usuarioId = SessionManager.getInstance(requireContext()).getUsuarioId();
+        if (usuarioId == -1) {
+            Toast.makeText(requireContext(), "Debes iniciar sesión", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    private void cargarDatos() {
-        listaGlobal.clear();
+        setLoading(true);
 
-        CursoApi cursoApi = RetrofitClient.getClient().create(CursoApi.class);
-        cursoApi.lista().enqueue(new Callback<List<CursoDto>>() {
-            @Override
-            public void onResponse(Call<List<CursoDto>> call, Response<List<CursoDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    for (CursoDto c : response.body()) {
-                        listaGlobal.add(new Publicacion(
-                                Publicacion.TIPO_CURSO,
-                                c.getIdCurso(),
-                                c.getTitulo(),
-                                c.getDescripcion(),
-                                c.getPrecio(),
-                                c.getNombreUsuario(),
-                                c.getCalificacion(),
-                                null,        // 8. ImagenUrl (Null, adapter usa dummy)
-                                c.getFoto(), // 9. ExtraInfo (Aquí guardamos el ARCHIVO/RUTA)
-                                c.getUsuarioId()
-                        ));
+        // Guardar en SharedPreferences ANTES de abrir el navegador
+        requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putInt(KEY_ITEM_ID,  itemId)
+                .putString(KEY_TIPO,  tipo)
+                .putInt(KEY_USUARIO,  usuarioId)
+                .apply();
+
+        PaypalRequestDto request = new PaypalRequestDto(usuarioId, itemId, tipo);
+
+        RetrofitClient.getApiService().iniciarPago(request)
+                .enqueue(new Callback<PaypalResponseDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<PaypalResponseDto> call,
+                                           @NonNull Response<PaypalResponseDto> response) {
+                        setLoading(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            abrirPaypalEnNavegador(response.body().getApprovalUrl());
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Error al crear el pago (" + response.code() + ")",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
-                    adapter.setDatos(listaGlobal);
-                }
-                cargarServicios();
-            }
-
-            @Override
-            public void onFailure(Call<List<CursoDto>> call, Throwable t) {
-                cargarServicios();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<PaypalResponseDto> call,
+                                          @NonNull Throwable t) {
+                        setLoading(false);
+                        Toast.makeText(requireContext(),
+                                "Sin conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
-    private void cargarServicios() {
-        ServicioApi servicioApi = RetrofitClient.getClient().create(ServicioApi.class);
-        servicioApi.lista().enqueue(new Callback<List<ServicioDto>>() {
-            @Override
-            public void onResponse(Call<List<ServicioDto>> call, Response<List<ServicioDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    for (ServicioDto s : response.body()) {
-                        listaGlobal.add(new Publicacion(
-                                Publicacion.TIPO_CLASE,
-                                s.getServicioId(),
-                                s.getTitulo(),
-                                s.getDescripcion(),
-                                s.getPrecio(),
-                                s.getNombreUsuario(),
-                                "N/A",              // 7. Calificación (Corregido: Antes era requisitos)
-                                null,               // 8. ImagenUrl (Null porque el Adapter usa imágenes dummy)
-                                s.getRequisitos(),  // 9. ExtraInfo (Aquí van los REQUISITOS)
-                                s.getUsuarioId()    // 10. IdAutor
-                        ));
+    // ── Paso 2: Abrir PayPal ─────────────────────────────────────────────────
+
+    private void abrirPaypalEnNavegador(String approvalUrl) {
+        if (approvalUrl == null || approvalUrl.isEmpty()) {
+            Toast.makeText(requireContext(), "URL de pago inválida", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(approvalUrl)));
+    }
+
+    // ── Paso 3: Confirmar pago ───────────────────────────────────────────────
+
+    private void confirmarPago(String paymentId, String payerId,
+                               int usuarioId, int resolvedItemId, String resolvedTipo) {
+        setLoading(true);
+
+        RetrofitClient.getApiService()
+                .confirmarPago(paymentId, payerId, usuarioId, resolvedItemId, resolvedTipo)
+                .enqueue(new Callback<PaypalResponseDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<PaypalResponseDto> call,
+                                           @NonNull Response<PaypalResponseDto> response) {
+                        setLoading(false);
+                        if (response.isSuccessful() && response.body() != null) {
+                            mostrarExitoPago();
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "No se pudo confirmar el pago.",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
-                    adapter.setDatos(listaGlobal);
-                }
-            }
-            @Override
-            public void onFailure(Call<List<ServicioDto>> call, Throwable t) {
-                if(listaGlobal.isEmpty()) {
-                    Toast.makeText(getContext(), "No se pudieron cargar las publicaciones", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<PaypalResponseDto> call,
+                                          @NonNull Throwable t) {
+                        setLoading(false);
+                        Toast.makeText(requireContext(),
+                                "Error de red al confirmar: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    // ── Éxito ────────────────────────────────────────────────────────────────
+
+    private void mostrarExitoPago() {
+        btnPagar.setEnabled(false);
+        btnPagar.setText("✅ Pago completado");
+        Toast.makeText(requireContext(),
+                "¡Pago exitoso! Tu compra ha sido registrada.", Toast.LENGTH_LONG).show();
+        btnPagar.postDelayed(() -> {
+            if (getActivity() != null) requireActivity().onBackPressed();
+        }, 2000);
+    }
+
+    private void setLoading(boolean loading) {
+        if (progressBar != null)
+            progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+        if (btnPagar != null)
+            btnPagar.setEnabled(!loading);
     }
 }

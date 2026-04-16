@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cuenta_nav"
     app:startDestination="@id/cuentaAutentificacion">
@@ -9,7 +9,7 @@
         android:id="@+id/cuentaAutentificacion"
         android:name="com.example.saber_share.fragmentos.cuenta.CuentaAutentificacion"
         android:label="fragment_cuenta_autentificacion"
-        tools:layout="@layout/fragment_cuenta_autentificacion" >
+        tools:layout="@layout/fragment_cuenta_autentificacion">
         <action
             android:id="@+id/action_cuentaAutentificacion_to_inicioSesion"
             app:destination="@id/inicioSesion" />
@@ -17,25 +17,40 @@
             android:id="@+id/action_cuentaAutentificacion_to_registroSesion"
             app:destination="@id/registroSesion" />
     </fragment>
+
     <fragment
         android:id="@+id/inicioSesion"
         android:name="com.example.saber_share.fragmentos.cuenta.InicioSesion"
         android:label="fragment_inicio_sesion"
-        tools:layout="@layout/fragment_cuenta_inicio_sesion" >
+        tools:layout="@layout/fragment_cuenta_inicio_sesion">
         <action
             android:id="@+id/action_inicioSesion_to_cuentaAutentificacion"
             app:destination="@id/cuentaAutentificacion" />
         <action
             android:id="@+id/action_inicioSesion_to_registroSesion"
             app:destination="@id/registroSesion" />
+        <!-- Acción para ir a MainActivity tras login exitoso -->
+        <action
+            android:id="@+id/action_inicioSesion_to_main"
+            app:destination="@id/main_nav"
+            app:popUpTo="@id/cuenta_nav"
+            app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/registroSesion"
         android:name="com.example.saber_share.fragmentos.cuenta.RegistroSesion"
         android:label="fragment_registro_sesion"
-        tools:layout="@layout/fragment_cuenta_registro_sesion" >
+        tools:layout="@layout/fragment_cuenta_registro_sesion">
         <action
             android:id="@+id/action_registroSesion_to_inicioSesion"
             app:destination="@id/inicioSesion" />
+        <!-- Acción para ir a MainActivity tras registro exitoso -->
+        <action
+            android:id="@+id/action_registroSesion_to_main"
+            app:destination="@id/main_nav"
+            app:popUpTo="@id/cuenta_nav"
+            app:popUpToInclusive="true" />
     </fragment>
+
 </navigation>

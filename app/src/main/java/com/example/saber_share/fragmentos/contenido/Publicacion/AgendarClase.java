@@ -36,64 +36,67 @@ import retrofit2.Response;
 
 public class AgendarClase extends Fragment {
 
-    private RecyclerView rvHorarios;
-    private TextView tvSubtitulo, tvVacio;
+    private RecyclerView   rvHorarios;
+    private TextView       tvSubtitulo, tvVacio;
     private SessionManager sessionManager;
-    private double precioClase;
 
-    private int servicioId;
-    private int profesorId;
+    private int    servicioId;
+    private int    profesorId;
     private String tituloServicio;
+    private double precioClase;
 
     public AgendarClase() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main_agendar_clase, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        sessionManager = new SessionManager(requireContext());
+        sessionManager = SessionManager.getInstance(requireContext());
 
-        rvHorarios = view.findViewById(R.id.rvHorarios);
+        rvHorarios  = view.findViewById(R.id.rvHorarios);
         tvSubtitulo = view.findViewById(R.id.tvSubtituloServicio);
-        tvVacio = view.findViewById(R.id.tvSinHorarios);
+        tvVacio     = view.findViewById(R.id.tvSinHorarios);
 
         if (getArguments() != null) {
-            servicioId = getArguments().getInt("servicioId", -1);
+            servicioId     = getArguments().getInt("servicioId", -1);
             tituloServicio = getArguments().getString("titulo", "Clase");
-            precioClase = getArguments().getDouble("precio", 0.0);
-            profesorId = getArguments().getInt("profesorId", -1);
-
-            tvSubtitulo.setText("Horarios para: " + tituloServicio);
+            precioClase    = getArguments().getDouble("precio", 0.0);
+            profesorId     = getArguments().getInt("profesorId", -1);
         }
+
+        tvSubtitulo.setText("Horarios para: " + tituloServicio);
         rvHorarios.setLayoutManager(new LinearLayoutManager(getContext()));
         cargarHorariosDisponibles();
     }
 
+    // ── Cargar slots disponibles ─────────────────────────────────────────────
+
     private void cargarHorariosDisponibles() {
-        AgendaApi api = RetrofitClient.getClient().create(AgendaApi.class);
-        api.getSlotsPorServicio(servicioId).enqueue(new Callback<List<AgendaDto>>() {
-            @Override
-            public void onResponse(Call<List<AgendaDto>> call, Response<List<AgendaDto>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<AgendaDto> disponibles = new ArrayList<>();
-                    for (AgendaDto slot : response.body()) {
-                        if ("DISPONIBLE".equalsIgnoreCase(slot.getEstado())) {
-                            disponibles.add(slot);
+        RetrofitClient.getInstance().create(AgendaApi.class)
+                .getSlotsPorServicio(servicioId).enqueue(new Callback<List<AgendaDto>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<AgendaDto>> call,
+                                           @NonNull Response<List<AgendaDto>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<AgendaDto> disponibles = new ArrayList<>();
+                            for (AgendaDto slot : response.body())
+                                if ("DISPONIBLE".equalsIgnoreCase(slot.getEstado()))
+                                    disponibles.add(slot);
+                            actualizarUI(disponibles);
+                        } else {
+                            mostrarMensaje("No se pudieron cargar los horarios");
                         }
                     }
-                    actualizarUI(disponibles);
-                } else {
-                    mostrarMensaje("No se pudieron cargar los horarios");
-                }
-            }
-            @Override public void onFailure(Call<List<AgendaDto>> call, Throwable t) {
-                mostrarMensaje("Error de conexión");
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<List<AgendaDto>> call, @NonNull Throwable t) {
+                        mostrarMensaje("Error de conexión");
+                    }
+                });
     }
 
     private void actualizarUI(List<AgendaDto> lista) {
@@ -103,72 +106,102 @@ public class AgendarClase extends Fragment {
         } else {
             tvVacio.setVisibility(View.GONE);
             rvHorarios.setVisibility(View.VISIBLE);
-            AgendaAdapter adapter = new AgendaAdapter(lista, this::confirmarReserva);
-            rvHorarios.setAdapter(adapter);
+            rvHorarios.setAdapter(new AgendaAdapter(lista, this::confirmarReserva));
         }
     }
 
+    // ── Confirmar y reservar ─────────────────────────────────────────────────
+
     private void confirmarReserva(AgendaDto slot) {
-        new AlertDialog.Builder(getContext())
-                .setTitle("Confirmar Reserva")
-                .setMessage("¿Deseas reservar la clase para el " + slot.getFecha() + " a las " + slot.getHora() + "?")
-                .setPositiveButton("Sí, Agendar", (dialog, which) -> realizarReserva(slot))
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Confirmar reserva")
+                .setMessage("¿Reservar el " + slot.getFecha() + " a las " + slot.getHora() + "?\n\n"
+                        + "Se abrirá el chat con el profesor para coordinar los detalles.")
+                .setPositiveButton("Sí, agendar", (d, w) -> realizarReserva(slot))
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
 
     private void realizarReserva(AgendaDto slot) {
-        int miIdAlumno = sessionManager.getUserId();
-        if(miIdAlumno == profesorId) {
+        int miId = sessionManager.getUsuarioId();
+        if (miId == profesorId) {
             mostrarMensaje("No puedes reservar tu propia clase");
             return;
         }
 
-        AgendaApi api = RetrofitClient.getClient().create(AgendaApi.class);
-        api.reservarSlot(slot.getIdAgenda(), miIdAlumno).enqueue(new Callback<AgendaDto>() {
-            @Override
-            public void onResponse(Call<AgendaDto> call, Response<AgendaDto> response) {
-                if (response.isSuccessful()) {
-                    guardarEnHistorial(slot);
-                } else {
-                    mostrarMensaje("Error al reservar: " + response.code());
-                }
-            }
-            @Override
-            public void onFailure(Call<AgendaDto> call, Throwable t) {
-                mostrarMensaje("Fallo de red al reservar");
-            }
-        });
+        RetrofitClient.getInstance().create(AgendaApi.class)
+                .reservarSlot(slot.getIdAgenda(), miId).enqueue(new Callback<AgendaDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<AgendaDto> call,
+                                           @NonNull Response<AgendaDto> response) {
+                        if (response.isSuccessful()) guardarEnHistorial(slot);
+                        else mostrarMensaje("Error al reservar: " + response.code());
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<AgendaDto> call, @NonNull Throwable t) {
+                        mostrarMensaje("Fallo de red al reservar");
+                    }
+                });
     }
+
+    // ── Guardar historial → abrir chat ───────────────────────────────────────
 
     private void guardarEnHistorial(AgendaDto slot) {
         HistorialDto historial = new HistorialDto();
-        historial.setFechapago(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
+        historial.setFechapago(
+                new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
         historial.setPago(precioClase);
-        historial.setUsuario_idUsuario(sessionManager.getUserId());
-
+        historial.setUsuario_idUsuario(sessionManager.getUsuarioId());
         historial.setServicioId(servicioId);
         historial.setCursoId(null);
 
-        HistorialApi api = RetrofitClient.getClient().create(HistorialApi.class);
-        api.crear(historial).enqueue(new Callback<HistorialDto>() {
-            @Override
-            public void onResponse(Call<HistorialDto> call, Response<HistorialDto> response) {
-                Toast.makeText(getContext(), "¡Clase Agendada Exitosamente!", Toast.LENGTH_LONG).show();
-                try {
-                    Navigation.findNavController(requireView()).popBackStack(R.id.inicio, false);
-                } catch (Exception e) {}
-            }
+        RetrofitClient.getInstance().create(HistorialApi.class)
+                .crear(historial).enqueue(new Callback<HistorialDto>() {
+                    @Override
+                    public void onResponse(@NonNull Call<HistorialDto> call,
+                                           @NonNull Response<HistorialDto> response) {
+                        Toast.makeText(getContext(),
+                                "¡Clase agendada! Ahora puedes coordinar con el profesor.",
+                                Toast.LENGTH_LONG).show();
+                        abrirChatConProfesor();
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<HistorialDto> call, @NonNull Throwable t) {
+                        // Aunque falle el historial, abrimos el chat igualmente
+                        Toast.makeText(getContext(),
+                                "Clase reservada. Contacta al profesor.",
+                                Toast.LENGTH_LONG).show();
+                        abrirChatConProfesor();
+                    }
+                });
+    }
 
-            @Override
-            public void onFailure(Call<HistorialDto> call, Throwable t) {
-                Toast.makeText(getContext(), "Clase reservada (Nota: Error guardando historial)", Toast.LENGTH_LONG).show();
+    // ── Navegar al chat con el profesor ──────────────────────────────────────
+
+    private void abrirChatConProfesor() {
+        if (profesorId <= 0) {
+            // Si no tenemos profesorId volvemos a inicio
+            try {
                 Navigation.findNavController(requireView()).popBackStack(R.id.inicio, false);
-            }
-        });
+            } catch (Exception e) { /* ignorar */ }
+            return;
+        }
+
+        Bundle args = new Bundle();
+        args.putInt("receptorId",       profesorId);
+        args.putString("receptorNombre", tituloServicio != null ? tituloServicio : "Profesor");
+
+        try {
+            // Limpiamos el back stack hasta inicio y luego abrimos el chat
+            Navigation.findNavController(requireView()).popBackStack(R.id.inicio, false);
+            Navigation.findNavController(requireView()).navigate(R.id.chatFragment, args);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Clase agendada ✅", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void mostrarMensaje(String msg) {
-        if(getContext() != null) Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

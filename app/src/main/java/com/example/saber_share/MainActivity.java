@@ -1,48 +1,59 @@
 package com.example.saber_share;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.saber_share.util.local.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private NavController navController;
-    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        sessionManager = new SessionManager(this);
-        sessionManager.checkLogin();
+        // IDs correctos según activity_main.xml
+        NavHostFragment navHostFragment = (NavHostFragment)
+                getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
 
-        setupNavigation();
-    }
-
-    private void setupNavigation() {
-        NavHostFragment navHostFragment =
-                (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.mainContainer);
-
-        if (navHostFragment == null) {
-            navHostFragment = NavHostFragment.create(R.navigation.main_nav);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.mainContainer, navHostFragment)
-                    .setPrimaryNavigationFragment(navHostFragment)
-                    .commitNow();
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
         }
 
-        navController = navHostFragment.getNavController();
+        BottomNavigationView bottomBar = findViewById(R.id.bottomBar);
+        if (bottomBar != null && navController != null) {
+            NavigationUI.setupWithNavController(bottomBar, navController);
+        }
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomBar);
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        handlePaypalIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handlePaypalIntent(intent);
+    }
+
+    private void handlePaypalIntent(Intent intent) {
+        if (intent == null) return;
+
+        Uri data = intent.getData();
+        if (data != null
+                && "sabersha".equals(data.getScheme())
+                && "paypal-return".equals(data.getHost())) {
+
+            if (navController != null) {
+                navController.navigate(R.id.comprar);
+            }
+        }
     }
 }

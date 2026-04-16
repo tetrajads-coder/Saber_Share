@@ -1,67 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F8FB"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/bg_primary">
 
-    <TextView
-        android:id="@+id/tvTituloChat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chat"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#20232A"
-        android:layout_marginBottom="10dp" />
-
-    <TextView
-        android:id="@+id/tvVacio"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Aun no hay mensajes"
-        android:gravity="center"
-        android:textColor="#7A7A7A"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMensajes"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-
-    <!-- Barra de envio -->
+    <!-- Header del chat -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/white"
-        android:padding="10dp"
-        android:elevation="2dp">
+        android:gravity="center_vertical"
+        android:background="@color/bg_secondary"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
 
-        <EditText
-            android:id="@+id/etMensaje"
+        <ImageButton
+            android:id="@+id/btn_chat_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrowback"
+            android:tint="@color/text_primary"
+            android:layout_marginEnd="10dp" />
+
+        <FrameLayout
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_avatar"
+            android:layout_marginEnd="10dp">
+
+            <TextView
+                android:id="@+id/tv_chat_avatar_inicial"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="U"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/accent_primary"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_chat_nombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre del usuario"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tv_chat_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="En línea"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/accent_primary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="@color/border" />
+
+    <!-- Lista de mensajes -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chat_mensajes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never" />
+
+    <!-- Input de mensaje -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/bg_secondary"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_mensaje"
+            style="@style/SS.TextInput"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Escribe un mensaje..."
-            android:inputType="textMultiLine"
-            android:maxLines="3"
-            android:background="@android:color/transparent"
-            android:padding="8dp"/>
+            android:layout_marginEnd="8dp">
 
-        <ImageButton
-            android:id="@+id/btnEnviar"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@android:drawable/ic_menu_send"
-            android:background="@android:color/transparent"
-            android:contentDescription="Enviar"/>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_mensaje"
+                style="@style/SS.TextInput.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:imeOptions="actionSend" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_enviar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_send"
+            app:backgroundTint="@color/accent_primary"
+            app:tint="@color/text_on_accent"
+            app:fabSize="mini"
+            app:elevation="0dp" />
+
     </LinearLayout>
 
 </LinearLayout>

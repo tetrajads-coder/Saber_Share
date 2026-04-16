@@ -2,107 +2,200 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_publicacion"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    android:layout_marginHorizontal="4dp"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/bg_card"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white">
+    app:cardElevation="0dp"
+    app:strokeColor="@color/border"
+    app:strokeWidth="1dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Imagen de Portada -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="140dp">
-
-            <ImageView
-                android:id="@+id/imgPortada"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img"
-                tools:ignore="ContentDescription" />
-
-            <!-- (Opcional) Puedes poner un scrim (sombra) aquí si el texto no se lee bien -->
-        </FrameLayout>
-
-        <!-- Contenido -->
+        <!-- Tag tipo + badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="10dp">
 
-            <!-- Título con el Tipo (Curso/Clase) -->
-            <TextView
-                android:id="@+id/tvTituloPub"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Curso: Título del Curso"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#20232A"
-                android:maxLines="2"
-                android:ellipsize="end"/>
-
-            <!-- Autor y Calificación -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
-
+            <FrameLayout
+                android:id="@+id/fl_tipo_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_tag_curso"
+                android:layout_marginEnd="8dp">
                 <TextView
-                    android:id="@+id/tvAutorPub"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Por: Profesor X"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tv_tipo_icon"
+                    android:text="📚"
                     android:textSize="14sp"
-                    android:textColor="#7A7A7A"/>
+                    android:gravity="center" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_item_tipo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CURSO"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/accent_primary"
+                android:letterSpacing="0.08" />
+
+            <TextView
+                android:id="@+id/tv_badge_mia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TU PUBL."
+                android:textSize="9sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/accent_primary"
+                android:background="@drawable/bg_tag_curso"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tv_item_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Título del curso"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/text_primary"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:layout_marginBottom="6dp" />
+
+        <!-- Descripción -->
+        <TextView
+            android:id="@+id/tv_item_descripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descripción"
+            android:textSize="13sp"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/text_secondary"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:lineSpacingMultiplier="1.4"
+            android:layout_marginBottom="14dp" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Footer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Avatar autor -->
+            <FrameLayout
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/bg_avatar_gradient"
+                android:layout_marginEnd="8dp">
+                <TextView
+                    android:id="@+id/tv_item_vendedor_inicial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="A"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/bg_primary"
+                    android:gravity="center" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvCalificacionPub"
+                    android:id="@+id/tv_item_vendedor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.8 ★"
-                    android:textStyle="bold"
-                    android:textColor="#FFC107"/>
+                    android:text="Autor"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_tertiary" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_item_estrellas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="★ 0.0"
+                        android:textSize="11sp"
+                        android:textColor="@color/star_filled" />
+
+                    <TextView
+                        android:id="@+id/tv_item_n_reviews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" (0)"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_tertiary" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Precio y Botón -->
+            <!-- Precio + botón -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="16dp">
+                android:orientation="vertical"
+                android:gravity="end">
 
                 <TextView
-                    android:id="@+id/tvPrecioPub"
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_item_precio"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="$ 299.00 MXN"
-                    android:textSize="18sp"
+                    android:text="$0.00"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#20232A"/>
+                    android:fontFamily="sans-serif-condensed"
+                    android:textColor="@color/accent_primary"
+                    android:layout_marginBottom="6dp" />
 
                 <Button
-                    android:id="@+id/btnAccionPub"
-                    style="@style/Widget.Material3.Button"
+                    android:id="@+id/btn_item_ver"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pagar"
-                    app:backgroundTint="#2E70FF"
-                    app:cornerRadius="20dp"/>
+                    android:layout_height="32dp"
+                    android:text="Ver"
+                    android:textSize="12sp"
+                    android:textColor="@color/bg_primary"
+                    android:background="@drawable/bg_btn_blue_gradient"
+                    android:paddingHorizontal="16dp"
+                    android:stateListAnimator="@null" />
             </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

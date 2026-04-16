@@ -13,43 +13,32 @@
         <action
             android:id="@+id/action_inicio_to_detallePublicacion"
             app:destination="@id/detallePublicacion" />
+        <action
+            android:id="@+id/action_inicio_to_editarPublicacion"
+            app:destination="@id/editarPublicacion" />
+        <action
+            android:id="@+id/action_inicio_to_gestionarAgenda"
+            app:destination="@id/gestionarAgendaFragment" />
     </fragment>
 
-    <!-- INBOX -->
     <fragment
         android:id="@+id/mensajes"
         android:name="com.example.saber_share.fragmentos.contenido.MensajesInboxFragment"
         android:label="Inbox"
-        tools:layout="@layout/fragment_inbox">
-
+        tools:layout="@layout/fragment_main_mensajes">
         <action
             android:id="@+id/action_inbox_to_chat"
             app:destination="@id/chatFragment" />
     </fragment>
 
-    <!-- CHAT -->
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.example.saber_share.fragmentos.contenido.ChatFragment"
         android:label="Chat"
-        tools:layout="@layout/fragment_main_mensajes">
-
-        <argument
-            android:name="receptorId"
-            app:argType="integer"
-            android:defaultValue="-1" />
-
-        <argument
-            android:name="receptorNombre"
-            app:argType="string"
-            android:defaultValue="" />
+        tools:layout="@layout/fragment_chat">
+        <argument android:name="receptorId"     app:argType="integer" android:defaultValue="-1" />
+        <argument android:name="receptorNombre" app:argType="string"  android:defaultValue="" />
     </fragment>
-
-    <fragment
-        android:id="@+id/gestionarAgendaFragment"
-        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.GestionarAgenda"
-        android:label="GestionarAgendaFragment"
-        tools:layout="@layout/fragment_main_gestionar_agenda" />
 
     <fragment
         android:id="@+id/perfil"
@@ -60,11 +49,11 @@
             android:id="@+id/action_perfil_to_historialFragment"
             app:destination="@id/historialFragment" />
         <action
-            android:id="@+id/action_perfil_to_administrarTarjetas"
-            app:destination="@id/administrarTarjetas" />
-        <action
             android:id="@+id/action_perfil_to_estadisticasFragment"
             app:destination="@id/estadisticasFragment" />
+        <action
+            android:id="@+id/action_perfil_to_misPublicaciones"
+            app:destination="@id/misPublicaciones" />
     </fragment>
 
     <fragment
@@ -81,7 +70,13 @@
         android:id="@+id/comprar"
         android:name="com.example.saber_share.fragmentos.contenido.Comprar"
         android:label="fragment_main_comprar"
-        tools:layout="@layout/fragment_main_comprar" />
+        tools:layout="@layout/fragment_main_comprar">
+        <argument android:name="itemId"      app:argType="integer" android:defaultValue="-1" />
+        <argument android:name="tipo"        app:argType="string"  android:defaultValue="CURSO" />
+        <argument android:name="titulo"      app:argType="string"  android:defaultValue="" />
+        <argument android:name="precio"      app:argType="float"   android:defaultValue="0" />
+        <argument android:name="descripcion" app:argType="string"  android:defaultValue="" />
+    </fragment>
 
     <include app:graph="@navigation/cuenta_nav" />
 
@@ -101,8 +96,25 @@
         android:label="DetallePublicacion"
         tools:layout="@layout/fragment_main_detalle_publicacion">
         <action
+            android:id="@+id/action_detalle_to_comprar"
+            app:destination="@id/comprar" />
+        <action
+            android:id="@+id/action_detalle_to_agendar"
+            app:destination="@id/agendarClase" />
+        <action
             android:id="@+id/action_detallePublicacion_to_editarPublicacion"
             app:destination="@id/editarPublicacion" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/agendarClase"
+        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.AgendarClase"
+        android:label="AgendarClase"
+        tools:layout="@layout/fragment_main_agendar_clase">
+        <argument android:name="servicioId" app:argType="integer" android:defaultValue="-1" />
+        <argument android:name="titulo"     app:argType="string"  android:defaultValue="" />
+        <argument android:name="precio"     app:argType="float"   android:defaultValue="0" />
+        <argument android:name="profesorId" app:argType="integer" android:defaultValue="-1" />
     </fragment>
 
     <fragment
@@ -133,19 +145,25 @@
         tools:layout="@layout/fragment_historial" />
 
     <fragment
-        android:id="@+id/administrarTarjetas"
-        android:name="com.example.saber_share.fragmentos.contenido.AdministrarTarjetas"
-        android:label="Administrar Tarjetas"
-        tools:layout="@layout/fragment_main_administrar_tarjetas">
-        <action
-            android:id="@+id/action_administrarTarjetas_to_agregarTarjeta"
-            app:destination="@id/agregarTarjeta" />
+        android:id="@+id/gestionarAgendaFragment"
+        android:name="com.example.saber_share.fragmentos.contenido.Publicacion.GestionarAgenda"
+        android:label="GestionarAgenda"
+        tools:layout="@layout/fragment_main_gestionar_agenda">
+        <argument android:name="servicioId" app:argType="integer" android:defaultValue="-1" />
+        <argument android:name="profesorId" app:argType="integer" android:defaultValue="-1" />
     </fragment>
 
     <fragment
-        android:id="@+id/agregarTarjeta"
-        android:name="com.example.saber_share.fragmentos.contenido.AgregarTarjeta"
-        android:label="Agregar Tarjeta"
-        tools:layout="@layout/fragment_main_agregar_tarjeta" />
+        android:id="@+id/misPublicaciones"
+        android:name="com.example.saber_share.fragmentos.contenido.MisPublicaciones"
+        android:label="MisPublicaciones"
+        tools:layout="@layout/fragment_mis_publicaciones">
+        <action
+            android:id="@+id/action_misPublicaciones_to_gestionarAgenda"
+            app:destination="@id/gestionarAgendaFragment" />
+        <action
+            android:id="@+id/action_misPublicaciones_to_editar"
+            app:destination="@id/editarPublicacion" />
+    </fragment>
 
 </navigation>

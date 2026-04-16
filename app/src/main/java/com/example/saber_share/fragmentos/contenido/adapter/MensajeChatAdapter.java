@@ -1,11 +1,8 @@
 package com.example.saber_share.fragmentos.contenido.adapter;
 
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,7 +38,8 @@ public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_mensaje, parent, false);
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_mensaje, parent, false);
         return new VH(v);
     }
 
@@ -49,34 +47,40 @@ public class MensajeChatAdapter extends RecyclerView.Adapter<MensajeChatAdapter.
     public void onBindViewHolder(@NonNull VH h, int position) {
         MensajeDto m = data.get(position);
 
-        String contenido = (m.getContenido() != null) ? m.getContenido() : "";
-        String fecha = (m.getFechaEnvio() != null) ? m.getFechaEnvio() : "";
+        String contenido = m.getContenido() != null ? m.getContenido() : "";
+        String hora      = m.getFechaEnvio() != null ? m.getFechaEnvio() : "";
 
-        h.tvContenido.setText(contenido);
-        h.tvFecha.setText(fecha);
+        boolean esMio = m.getEmisorId() == myUserId;
 
-        Integer emisorId = m.getEmisorId();
-        boolean esMio = (emisorId != null && emisorId == myUserId);
-
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) h.bubble.getLayoutParams();
-        params.gravity = esMio ? Gravity.END : Gravity.START;
-        h.bubble.setLayoutParams(params);
+        if (esMio) {
+            h.layoutEnviado.setVisibility(View.VISIBLE);
+            h.layoutRecibido.setVisibility(View.GONE);
+            h.tvEnviadoTexto.setText(contenido);
+            h.tvEnviadoHora.setText(hora);
+        } else {
+            h.layoutRecibido.setVisibility(View.VISIBLE);
+            h.layoutEnviado.setVisibility(View.GONE);
+            h.tvRecibidoTexto.setText(contenido);
+            h.tvRecibidoHora.setText(hora);
+        }
     }
 
     @Override
-    public int getItemCount() {
-        return data.size();
-    }
+    public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        LinearLayout bubble;
-        TextView tvContenido, tvFecha;
+        View layoutEnviado, layoutRecibido;
+        TextView tvEnviadoTexto, tvEnviadoHora;
+        TextView tvRecibidoTexto, tvRecibidoHora;
 
         VH(@NonNull View itemView) {
             super(itemView);
-            bubble = itemView.findViewById(R.id.bubble);
-            tvContenido = itemView.findViewById(R.id.tvContenido);
-            tvFecha = itemView.findViewById(R.id.tvFecha);
+            layoutEnviado   = itemView.findViewById(R.id.layout_msg_enviado);
+            layoutRecibido  = itemView.findViewById(R.id.layout_msg_recibido);
+            tvEnviadoTexto  = itemView.findViewById(R.id.tv_msg_enviado_texto);
+            tvEnviadoHora   = itemView.findViewById(R.id.tv_msg_enviado_hora);
+            tvRecibidoTexto = itemView.findViewById(R.id.tv_msg_recibido_texto);
+            tvRecibidoHora  = itemView.findViewById(R.id.tv_msg_recibido_hora);
         }
     }
 }
